@@ -13,6 +13,8 @@ const TINCTURES = {
   azur:    { nom:"Azur (bleu)",    hex:"#23508f", type:"émail", lum:"Élévation par l'Esprit, couleur de la Vierge, seigneurie intérieure.", dechu:"fausse pureté, tyrannie.", page:49 },
   sinople: { nom:"Sinople (vert)", hex:"#1f6e3b", type:"émail", lum:"Espérance (théologale), virilité spirituelle, jeunesse de l'âme, courtoisie.", dechu:"venin, corruption, l'ophidien.", page:46 },
   pourpre: { nom:"Pourpre",        hex:"#6b2a5b", type:"amphibie", lum:"Royauté ; transmutation / déification de l'être, le Verbe ; la Pierre de fondation.", dechu:"vanité des gloires, pouvoir sans Dieu.", page:51 },
+  hermine: { nom:"Hermine (fourrure)", hex:"#e9eaee", type:"fourrure", lum:"Pureté virginale sous aspect totémique : la force vivante de l'animal au pelage immaculé ; même sens que l'argent (état marial, l'Œuvre au Blanc), mais incarné. « Plutôt la mort que la souillure » (Anne de Bretagne : « À ma vie », jeu sur amavi, « j'ai aimé »). La moucheture porte un aspect trinitaire.", dechu:"pureté affichée puis reniée ; la souillure consentie.", page:56 },
+  vair:    { nom:"Vair (fourrure)",    hex:"#9fb6d4", type:"fourrure", lum:"Argent et azur conjugués : la pureté du cœur (argent) et l'élévation par l'Esprit (azur) unies et potentialisées ; la fourrure du « petit-gris ».", dechu:"", page:57 },
 };
 
 const FORMES = {
@@ -124,7 +126,13 @@ const S = { forme:"demi-amande", partition:"parti", A:"gueules", B:"argent", pie
 
 // ---------- Rendu de l'écu ----------
 let HATCH=false;                       // mode hachures héraldiques (noir & blanc, convention Petra Sancta)
-function paint(k){ return HATCH ? `url(#h-${k})` : TINCTURES[k].hex; }
+function paint(k){
+  if(TINCTURES[k].type==="fourrure") return `url(#f-${k})`;   // fourrure = motif, en couleur ET en hachures
+  return HATCH ? `url(#h-${k})` : TINCTURES[k].hex;
+}
+const FOURRURES = `
+<pattern id="f-hermine" width="36" height="36" patternUnits="userSpaceOnUse"><rect width="36" height="36" fill="#e9eaee"/><g fill="#1c1c20"><g transform="translate(9,13)"><path d="M0,-3 C-2.6,-0.5 -3.2,3.6 0,6.6 C3.2,3.6 2.6,-0.5 0,-3 Z"/><circle cx="-2.4" cy="-4.3" r=".95"/><circle cx="0" cy="-5.7" r=".95"/><circle cx="2.4" cy="-4.3" r=".95"/></g><g transform="translate(27,31)"><path d="M0,-3 C-2.6,-0.5 -3.2,3.6 0,6.6 C3.2,3.6 2.6,-0.5 0,-3 Z"/><circle cx="-2.4" cy="-4.3" r=".95"/><circle cx="0" cy="-5.7" r=".95"/><circle cx="2.4" cy="-4.3" r=".95"/></g></g></pattern>
+<pattern id="f-vair" width="40" height="32" patternUnits="userSpaceOnUse"><rect width="40" height="32" fill="#e9eaee"/><g fill="#23508f"><path d="M0,0 H20 C18,11 12,16 10,16 C8,16 2,11 0,0 Z"/><path d="M20,0 H40 C38,11 32,16 30,16 C28,16 22,11 20,0 Z"/><path d="M-10,16 H10 C8,27 2,32 0,32 C-2,32 -8,27 -10,16 Z"/><path d="M10,16 H30 C28,27 22,32 20,32 C18,32 12,27 10,16 Z"/><path d="M30,16 H50 C48,27 42,32 40,32 C38,32 32,27 30,16 Z"/></g></pattern>`;
 const HATCHES = `
 <pattern id="h-or" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#fff"/><circle cx="2.5" cy="2.5" r="0.55" fill="#111"/></pattern>
 <pattern id="h-argent" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#fff"/></pattern>
@@ -176,7 +184,7 @@ function render(){
   const cimier = S.cimier ? placedCharge(S.cimier, S.cimierTinct, 100, -24, 0.9, "c") : "";
   const dev = S.devise ? `<g><path d="M18,250 Q100,234 182,250 Q100,268 18,250 Z" fill="#f3ead4" stroke="#caa12e"/><text x="100" y="254" text-anchor="middle" font-size="12" fill="#5a4a1e" font-style="italic">${escapeXML(S.devise)}</text></g>` : "";
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -56 200 328">
-    <defs>${HATCHES}<clipPath id="sh"><path d="${path}"/></clipPath></defs>
+    <defs>${HATCHES}${FOURRURES}<clipPath id="sh"><path d="${path}"/></clipPath></defs>
     ${cimier}
     <g clip-path="url(#sh)">${fieldRegions()}${pieceSVG()}${placedCharge(S.meuble, S.meubleTinct, 100, 114, 2.4, "m")}</g>
     <path d="${path}" fill="none" stroke="${border}" stroke-width="3.5"/>
@@ -192,7 +200,7 @@ function escapeXML(s){ return s.replace(/[<>&"']/g,c=>({"<":"&lt;",">":"&gt;","&
 const MEUBLES_MASC = new Set(["lion","leopard","pont","coeur","soleil","lys"]);
 function blason(){
   const t=k=>TINCTURES[k].nom.split(" ")[0].toLowerCase();
-  const de=n=>/^[aeiouyàâäéèêëîïôöûü]/i.test(n)?`d'${n}`:`de ${n}`;   // élision
+  const de=n=>/^[aeiouyhàâäéèêëîïôöûü]/i.test(n)?`d'${n}`:`de ${n}`;   // élision (h muet : d'hermine)
   const art=k=>MEUBLES_MASC.has(k)?"un":"une";                        // genre
   const Cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
   let f = FORMES[S.forme].nom.toLowerCase();
@@ -231,19 +239,19 @@ function tinctureWarn(){
   const w=[]; const P=PARTITIONS[S.partition];
   if(P.regions>1){
     const a=TINCTURES[S.A].type, b=TINCTURES[S.B].type;
-    if(a===b && a!=="amphibie") w.push(`Champ : ${TINCTURES[S.A].nom} et ${TINCTURES[S.B].nom} sont tous deux ${a==="métal"?"des métaux":"des émaux"} — la règle veut « ni métal sur métal, ni émail sur émail ».`);
+    if(a===b && a!=="amphibie" && a!=="fourrure") w.push(`Champ : ${TINCTURES[S.A].nom} et ${TINCTURES[S.B].nom} sont tous deux ${a==="métal"?"des métaux":"des émaux"} — la règle veut « ni métal sur métal, ni émail sur émail ».`);
   }
   // meuble central vs fond qu'il touche (approx : sur partition, il touche les 2 régions)
   if(S.meuble && MEUBLES[S.meuble].rendu){
     const mt=TINCTURES[S.meubleTinct].type;
     const fonds = P.regions>1 ? [TINCTURES[S.A].type, TINCTURES[S.B].type] : [TINCTURES[S.A].type];
-    if(mt!=="amphibie" && fonds.every(f=>f===mt && f!=="amphibie")) w.push(`Le meuble (${TINCTURES[S.meubleTinct].nom}) est de même nature que son fond — ${mt==="métal"?"métal sur métal":"émail sur émail"}. (Sur une partition métal+couleur, une pièce brochant peut être tolérée, ou « de l'un en l'autre ».)`);
+    if(mt!=="amphibie" && mt!=="fourrure" && fonds.every(f=>f===mt && f!=="amphibie" && f!=="fourrure")) w.push(`Le meuble (${TINCTURES[S.meubleTinct].nom}) est de même nature que son fond — ${mt==="métal"?"métal sur métal":"émail sur émail"}. (Sur une partition métal+couleur, une pièce brochant peut être tolérée, ou « de l'un en l'autre ».)`);
   }
   // pièce honorable vs champ
   if(S.piece){
     const pt=TINCTURES[S.pieceTinct].type;
     const fonds = P.regions>1 ? [TINCTURES[S.A].type, TINCTURES[S.B].type] : [TINCTURES[S.A].type];
-    if(pt!=="amphibie" && fonds.every(f=>f===pt && f!=="amphibie")) w.push(`La pièce honorable (${TINCTURES[S.pieceTinct].nom}) est de même nature que le champ — ${pt==="métal"?"métal sur métal":"émail sur émail"}.`);
+    if(pt!=="amphibie" && pt!=="fourrure" && fonds.every(f=>f===pt && f!=="amphibie" && f!=="fourrure")) w.push(`La pièce honorable (${TINCTURES[S.pieceTinct].nom}) est de même nature que le champ — ${pt==="métal"?"métal sur métal":"émail sur émail"}.`);
   }
   const el=document.getElementById("tincture-warning");
   if(w.length){ el.hidden=false; el.innerHTML="⚠︎ "+w.join("<br>⚠︎ "); } else el.hidden=true;
@@ -255,12 +263,13 @@ function fillSelects(){
   document.getElementById("forme").innerHTML = Object.entries(FORMES).map(([k,o])=>opt(k,o.nom,S.forme)).join("");
   document.getElementById("partition").innerHTML = Object.entries(PARTITIONS).map(([k,o])=>opt(k,o.nom,S.partition)).join("");
   const tinctOpts = sel => Object.entries(TINCTURES).map(([k,o])=>opt(k,o.nom,sel)).join("");
+  const tinctOptsPlain = sel => Object.entries(TINCTURES).filter(([,o])=>o.type!=="fourrure").map(([k,o])=>opt(k,o.nom,sel)).join("");
   document.getElementById("tinctureA").innerHTML = tinctOpts(S.A);
   document.getElementById("tinctureB").innerHTML = tinctOpts(S.B);
   document.getElementById("piece").innerHTML = Object.entries(PIECES).map(([k,o])=>opt(k,o.nom,S.piece)).join("");
   document.getElementById("pieceTinct").innerHTML = tinctOpts(S.pieceTinct);
-  document.getElementById("meubleTinct").innerHTML = tinctOpts(S.meubleTinct);
-  document.getElementById("cimierTinct").innerHTML = tinctOpts(S.cimierTinct);
+  document.getElementById("meubleTinct").innerHTML = tinctOptsPlain(S.meubleTinct);
+  document.getElementById("cimierTinct").innerHTML = tinctOptsPlain(S.cimierTinct);
   const meubleOpts = sel => Object.entries(MEUBLES).map(([k,o])=>opt(k,o.nom + (o.rendu===null&&k?" (figure à venir)":""),sel)).join("");
   document.getElementById("meuble").innerHTML = meubleOpts(S.meuble);
   document.getElementById("cimier").innerHTML = meubleOpts(S.cimier);
