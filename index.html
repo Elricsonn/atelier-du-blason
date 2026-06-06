@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L'Atelier du Blason</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- SEUIL — porte rituélique (modèle Loge RER) -->
+<div id="gate" aria-label="Seuil de l'atelier">
+  <div class="gate-orn">✦ ✦ ✦</div>
+  <h1 class="gate-title">L'Atelier du Blason</h1>
+  <p class="gate-sub">D'après <em>La Voie du Blason</em>.<br>Le seuil ne s'ouvre qu'au mot.</p>
+  <div class="gate-rule"></div>
+  <form id="gate-form" autocomplete="off">
+    <input type="password" id="gate-mdp" placeholder="Le mot" autocomplete="off" spellcheck="false" autofocus>
+    <button type="submit">Entrer</button>
+    <div id="gate-error" role="alert"></div>
+  </form>
+  <div class="gate-orn">✦</div>
+  <div class="gate-sign">© Elricsonn</div>
+</div>
+
+<header>
+  <h1>L'Atelier du Blason</h1>
+  <p class="sub">Composer ses armes selon la lecture spirituelle de l'héraldique — d'après <em>La Voie du Blason</em> de Pascal Gambirasio d'Asseux.</p>
+</header>
+
+<main>
+  <!-- COLONNE 1 — contrôles guidés -->
+  <section id="controls" aria-label="Construction">
+    <fieldset>
+      <legend>1 · La forme</legend>
+      <select id="forme"></select>
+    </fieldset>
+
+    <fieldset>
+      <legend>2 · Le champ &amp; la partition</legend>
+      <select id="partition"></select>
+      <div class="row">
+        <label>Émail A <span class="hint" id="labA">(tout l'écu)</span></label>
+        <select id="tinctureA" class="tinct"></select>
+      </div>
+      <div class="row" id="rowB">
+        <label>Émail B</label>
+        <select id="tinctureB" class="tinct"></select>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>3 · Le meuble central <span class="hint">(brochant)</span></legend>
+      <select id="meuble"></select>
+      <div class="row">
+        <label>Tincture</label>
+        <select id="meubleTinct" class="tinct"></select>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>4 · Le timbre</legend>
+      <div class="row">
+        <label>Cimier</label>
+        <select id="cimier"></select>
+      </div>
+      <div class="row">
+        <label>Tincture cimier</label>
+        <select id="cimierTinct" class="tinct"></select>
+      </div>
+      <div class="row">
+        <label>Devise</label>
+        <input id="devise" type="text" maxlength="60" placeholder="votre cri…">
+      </div>
+    </fieldset>
+
+    <div id="tincture-warning" class="warn" hidden></div>
+  </section>
+
+  <!-- COLONNE 2 — aperçu -->
+  <section id="preview" aria-label="Aperçu">
+    <div id="ecu"></div>
+    <div class="actions">
+      <button id="dl-svg">⬇ Télécharger l'écu (SVG)</button>
+      <button id="copy-txt">⧉ Copier blasonnement + lecture</button>
+    </div>
+  </section>
+
+  <!-- COLONNE 3 — sens -->
+  <section id="reading" aria-label="Lecture spirituelle">
+    <h2>Blasonnement</h2>
+    <p id="blason" class="blason"></p>
+    <h2>Lecture spirituelle</h2>
+    <div id="senses"></div>
+    <p class="src">Sens lumineux ✦ et déchu ⟂ tirés du livre (n° de page indiqués). Règle de tincture : ni métal sur métal, ni émail sur émail.</p>
+  </section>
+</main>
+
+<footer>L'Atelier du Blason — mise en pratique de <em>La Voie du Blason</em>. Brouillon de travail, enrichissement en cours.</footer>
+
+<script src="meubles.js"></script>
+<script src="app.js"></script>
+<script>
+/* Seuil rituélique — sha256 du mot (minuscules), modèle Loge RER. Repli si pas de SubtleCrypto. */
+(function(){
+  const HASH="f5d52506916d2d609803c49eed849675327a318ff3237316bbbbd33100e93544";
+  const gate=document.getElementById("gate");
+  if(sessionStorage.getItem("blason-ouvert")==="1"){ gate.remove(); return; }
+  async function sha256hex(s){
+    const buf=await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+    return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+  }
+  async function ouvre(v){
+    if(window.crypto && crypto.subtle) return (await sha256hex(v))===HASH;
+    return v==="notuma"; // repli (file:// sans contexte sûr)
+  }
+  const inp=document.getElementById("gate-mdp"), err=document.getElementById("gate-error");
+  document.getElementById("gate-form").addEventListener("submit", async e=>{
+    e.preventDefault();
+    const v=inp.value.trim().toLowerCase();
+    if(!v){ err.textContent="Saisissez le mot."; return; }
+    if(await ouvre(v)){
+      sessionStorage.setItem("blason-ouvert","1");
+      gate.classList.add("open"); setTimeout(()=>gate.remove(),460);
+    } else { err.textContent="Le seuil reste clos."; inp.select(); }
+  });
+  inp.focus();
+})();
+</script>
+</body>
+</html>

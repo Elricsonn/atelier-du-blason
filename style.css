@@ -1,0 +1,108 @@
+/* Charte or/noir Cinzel — alignée sur l'écosystème Elricsonn (Simulation de Loge RER) */
+
+/* ── Seuil rituélique (porte) ── */
+#gate{
+  position:fixed; inset:0; z-index:9999; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:.2rem; text-align:center; padding:1.5rem;
+  background:radial-gradient(ellipse at 50% 34%, #1a1200 0%, #0a0700 80%) fixed, #060400;
+  transition:opacity .45s ease;
+}
+#gate.open{ opacity:0; pointer-events:none; }
+#gate .gate-orn{ color:#d4a84b; opacity:.55; letter-spacing:.5em; font-size:1.25rem; }
+#gate .gate-title{
+  font-family:"Cinzel",serif; font-weight:700; color:#d4a84b; font-size:2rem;
+  letter-spacing:.06em; margin:.7rem 0 .2rem; text-shadow:0 0 22px rgba(212,168,75,.3);
+}
+#gate .gate-sub{ color:#9c8a63; font-style:italic; font-size:.96rem; margin:.1rem 0 .2rem; line-height:1.5; }
+#gate .gate-rule{ width:200px; height:1px; margin:1rem auto;
+  background:linear-gradient(to right, transparent, #d4a84b, transparent); }
+#gate-form{ display:flex; flex-direction:column; gap:.7rem; width:min(320px,82vw);
+  padding:1.6rem 1.4rem; border:1px solid rgba(212,168,75,.28); border-radius:12px;
+  background:linear-gradient(180deg, rgba(40,30,10,.5), rgba(20,15,6,.6));
+  box-shadow:0 0 44px rgba(0,0,0,.8), inset 0 0 26px rgba(212,168,75,.04); }
+#gate-form input{
+  font:inherit; text-align:center; letter-spacing:.18em; padding:.55rem .6rem;
+  color:#e7d8b4; background:#1a1510; border:1px solid rgba(212,168,75,.35); border-radius:7px;
+}
+#gate-form input:focus{ outline:none; border-color:#d4a84b; box-shadow:0 0 0 2px rgba(212,168,75,.18); }
+#gate-form button{
+  font-family:"Cinzel",serif; font-size:.92rem; letter-spacing:.08em; cursor:pointer; padding:.55rem;
+  color:#d4a84b; background:transparent; border:1px solid rgba(212,168,75,.45); border-radius:7px; transition:.15s;
+}
+#gate-form button:hover{ color:#1a1200; background:#d4a84b; border-color:#d4a84b; }
+#gate-error{ color:#d98a3a; font-size:.84rem; min-height:1.1em; font-style:italic; }
+#gate .gate-sign{ margin-top:1.8rem; color:#d4a84b; font-family:"Cinzel",serif;
+  font-size:1rem; letter-spacing:.22em; opacity:.85; text-shadow:0 0 12px rgba(212,168,75,.3); }
+
+:root{
+  --gold:#d4a84b; --gold-deep:#d48a2b; --gold-dim:#8b6914;
+  --ink:#e7d8b4; --muted:#9c8a63; --warn:#d98a3a;
+  --panel:#17120a; --panel-edge:rgba(212,168,75,.28);
+  --bg0:#1a1200; --bg1:#0a0700;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; min-height:100vh; color:var(--ink);
+  background:radial-gradient(ellipse at 50% 18%, var(--bg0) 0%, var(--bg1) 78%) fixed, #0a0700;
+  font-family:"Crimson Text","Georgia",serif; font-size:18px; line-height:1.55;
+}
+header{ text-align:center; padding:2rem 1rem .4rem; }
+header h1{
+  font-family:"Cinzel",serif; font-weight:700; color:var(--gold);
+  font-size:2.1rem; letter-spacing:.06em; margin:.2rem 0;
+  text-shadow:0 0 18px rgba(212,168,75,.25);
+}
+header .sub{ max-width:760px; margin:.4rem auto; color:var(--muted); font-size:.98rem; font-style:italic; }
+/* filets dorés */
+header::after{ content:""; display:block; width:220px; height:1px; margin:1rem auto 0;
+  background:linear-gradient(to right, transparent, var(--gold), transparent); }
+footer{ text-align:center; padding:2rem 1rem 3rem; color:var(--gold-dim); font-size:.8rem; font-family:"Cinzel",serif; letter-spacing:.04em; }
+
+main{
+  display:grid; grid-template-columns:360px 1fr 360px; gap:1rem;
+  max-width:1320px; margin:0 auto; padding:1rem 1.2rem; align-items:start;
+}
+@media(max-width:980px){ main{ grid-template-columns:1fr; } #preview{ margin:0 !important; } }
+
+section{
+  background:linear-gradient(180deg, rgba(40,30,10,.55), rgba(20,15,6,.65));
+  border:1px solid var(--panel-edge); border-radius:10px; padding:1rem 1.1rem;
+  box-shadow:0 2px 14px rgba(0,0,0,.45), inset 0 0 30px rgba(212,168,75,.04);
+}
+h2,legend{ font-family:"Cinzel",serif; color:var(--gold); }
+fieldset{ border:1px solid rgba(212,168,75,.2); border-radius:8px; margin:0 0 1rem; padding:.5rem .8rem 1rem; }
+legend{ font-weight:600; font-size:.96rem; padding:0 .45rem; letter-spacing:.03em; }
+.hint{ color:var(--muted); font-weight:400; font-size:.82em; font-style:italic; }
+.row{ display:flex; align-items:center; gap:.5rem; margin-top:.55rem; }
+.row label{ flex:0 0 auto; min-width:96px; font-size:.9rem; color:var(--ink); }
+select,input{
+  flex:1; font:inherit; font-size:.92rem; padding:.34rem .45rem;
+  color:var(--ink); background:#1d1810; border:1px solid rgba(212,168,75,.32); border-radius:6px;
+}
+select{ cursor:pointer; }
+select:focus,input:focus{ outline:none; border-color:var(--gold); box-shadow:0 0 0 2px rgba(212,168,75,.18); }
+
+/* --- colonne centrale : décalée de 30px de chaque côté pour dégager l'écu --- */
+#preview{ display:flex; flex-direction:column; align-items:center; gap:1.2rem;
+  position:sticky; top:.6rem; margin:0 30px; }
+#ecu svg{ width:300px; height:auto; filter:drop-shadow(0 6px 22px rgba(0,0,0,.6)); }
+.actions{ display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center; }
+button{
+  font-family:"Cinzel",serif; font-size:.82rem; letter-spacing:.03em; cursor:pointer;
+  color:var(--gold); background:transparent; border:1px solid rgba(212,168,75,.4);
+  border-radius:7px; padding:.45rem .8rem; transition:.15s;
+}
+button:hover{ color:#1a1200; background:var(--gold); border-color:var(--gold); }
+
+#reading h2{ font-size:1.05rem; margin:.3rem 0 .35rem; padding-bottom:.25rem;
+  border-bottom:1px solid rgba(212,168,75,.22); letter-spacing:.03em; }
+.blason{ font-style:italic; color:#f0e3c2; background:rgba(212,168,75,.06);
+  border-left:3px solid var(--gold); padding:.5rem .7rem; border-radius:0 6px 6px 0; }
+#senses .item{ margin:.6rem 0; font-size:.9rem; }
+#senses .item b{ color:var(--gold); font-family:"Cinzel",serif; font-weight:600; font-size:.92rem; }
+#senses .lum{ display:block; color:var(--ink); }
+#senses .dechu{ display:block; color:#b39a78; font-size:.86rem; font-style:italic; }
+#senses .pg{ color:var(--gold-dim); font-size:.78rem; }
+.src{ color:var(--muted); font-size:.78rem; margin-top:.9rem; font-style:italic; }
+.warn{ background:rgba(217,138,58,.1); border:1px solid var(--warn); color:#eab26a;
+  border-radius:8px; padding:.5rem .7rem; font-size:.86rem; }
