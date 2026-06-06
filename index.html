@@ -54,7 +54,16 @@
     </fieldset>
 
     <fieldset>
-      <legend>3 · Le meuble central <span class="hint">(brochant)</span></legend>
+      <legend>3 · La pièce honorable <span class="hint">(brochant sur le champ)</span></legend>
+      <select id="piece"></select>
+      <div class="row">
+        <label>Tincture</label>
+        <select id="pieceTinct" class="tinct"></select>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>4 · Le meuble central <span class="hint">(brochant)</span></legend>
       <select id="meuble"></select>
       <div class="row">
         <label>Tincture</label>
@@ -63,7 +72,7 @@
     </fieldset>
 
     <fieldset>
-      <legend>4 · Le timbre</legend>
+      <legend>5 · Le timbre</legend>
       <div class="row">
         <label>Cimier</label>
         <select id="cimier"></select>
@@ -85,6 +94,7 @@
   <section id="preview" aria-label="Aperçu">
     <div id="ecu"></div>
     <div class="actions">
+      <button id="toggle-hatch">▦ Hachures (N&B)</button>
       <button id="dl-svg">⬇ Télécharger l'écu (SVG)</button>
       <button id="copy-txt">⧉ Copier blasonnement + lecture</button>
     </div>

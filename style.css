@@ -171,3 +171,6 @@ button:hover{ color:#1a1200; background:var(--gold); border-color:var(--gold); }
 .intro-actions button:hover{ filter:brightness(1.08); }
 .intro-actions button.ghost{ color:var(--gold); background:transparent; }
 .intro-actions button.ghost:hover{ background:rgba(212,168,75,.1); }
+
+/* bouton hachures actif */
+#toggle-hatch.active{ color:#1a1200; background:var(--gold); border-color:var(--gold); }

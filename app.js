@@ -83,13 +83,65 @@ const SHIELD = {
   "losange":"M100,10 L186,120 L100,230 L14,120 Z",
 };
 
+// ---------- Pièces honorables (ordinaires brochant sur le champ) ----------
+const PIECES = {
+  "":        { nom:"— aucune —", lum:"", dechu:"", page:null, bl:"", draw:"" },
+  "chef":    { nom:"Chef", bl:"au chef", page:null,
+               lum:"La part haute de l'écu : le Ciel, la tête, l'autorité reçue d'en haut ; marque d'honneur et de commandement.", dechu:"orgueil du rang, autorité usurpée.",
+               draw:'<rect x="0" y="0" width="200" height="60"/>' },
+  "champagne":{ nom:"Champagne", bl:"à la champagne", page:null,
+               lum:"La bande basse : la terre ferme, le socle ; l'humilité qui porte tout l'édifice.", dechu:"pesanteur, enlisement.",
+               draw:'<rect x="0" y="180" width="200" height="60"/>' },
+  "fasce":   { nom:"Fasce", bl:"à la fasce", page:81,
+               lum:"La ceinture, le lien horizontal ; l'horizon, la juste mesure, la fidélité qui tient.", dechu:"barrage entre le Ciel et la terre.",
+               draw:'<rect x="0" y="90" width="200" height="60"/>' },
+  "pal":     { nom:"Pal", bl:"au pal", page:79,
+               lum:"Le pieu planté, l'axe droit, les défenses avancées ; la rectitude qui se tient debout.", dechu:"raideur, orgueil du pieu.",
+               draw:'<rect x="70" y="0" width="60" height="240"/>' },
+  "bande":   { nom:"Bande", bl:"à la bande", page:83,
+               lum:"Le baudrier du chevalier : l'élan qui monte vers le chef dextre, la diagonale de l'effort vers la lumière.", dechu:"",
+               draw:'<polygon points="-17.7,14.7 17.7,-14.7 217.7,225.3 182.3,254.7"/>' },
+  "barre":   { nom:"Barre", bl:"à la barre", page:83,
+               lum:"Reflet de la bande, descendante.", dechu:"souvent brisure — marque de cadet ou de bâtardise.",
+               draw:'<polygon points="182.3,-14.7 217.7,14.7 17.7,254.7 -17.7,225.3"/>' },
+  "chevron": { nom:"Chevron", bl:"au chevron", page:null,
+               lum:"Les deux versants du toit, les branches du compas ; la protection du foyer, l'élévation appuyée sur deux jambes fermes.", dechu:"",
+               draw:'<polygon points="100,48 200,140 165,140 100,92 35,140 0,140"/>' },
+  "croix":   { nom:"Croix (pièce)", bl:"à la croix", page:85,
+               lum:"La Croix qui traverse tout l'écu : l'axe du monde, le don de soi, le Christ au centre de l'être.", dechu:"",
+               draw:'<rect x="70" y="0" width="60" height="240"/><rect x="0" y="90" width="200" height="60"/>' },
+  "sautoir": { nom:"Sautoir", bl:"au sautoir", page:87,
+               lum:"La croix de saint André, en X : le carrefour, l'épreuve traversée, le lien des quatre directions.", dechu:"",
+               draw:'<polygon points="-17.7,14.7 17.7,-14.7 217.7,225.3 182.3,254.7"/><polygon points="182.3,-14.7 217.7,14.7 17.7,254.7 -17.7,225.3"/>' },
+  "bordure": { nom:"Bordure", bl:"à la bordure", page:null,
+               lum:"L'enceinte qui ceint et garde l'écu : la muraille de la Cité, la vigilance qui protège le dedans.", dechu:"enfermement, repli sur soi.",
+               draw:"BORDURE" },
+};
+
 // ---------- État ----------
 // État de départ : exemple GÉNÉRIQUE (aucune donnée personnelle).
-const S = { forme:"demi-amande", partition:"parti", A:"gueules", B:"argent", meuble:"lys", meubleTinct:"or", cimier:"etoile", cimierTinct:"argent", devise:"" };
+const S = { forme:"demi-amande", partition:"parti", A:"gueules", B:"argent", piece:"", pieceTinct:"or", meuble:"lys", meubleTinct:"or", cimier:"etoile", cimierTinct:"argent", devise:"" };
 
 // ---------- Rendu de l'écu ----------
+let HATCH=false;                       // mode hachures héraldiques (noir & blanc, convention Petra Sancta)
+function paint(k){ return HATCH ? `url(#h-${k})` : TINCTURES[k].hex; }
+const HATCHES = `
+<pattern id="h-or" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#fff"/><circle cx="2.5" cy="2.5" r="0.55" fill="#111"/></pattern>
+<pattern id="h-argent" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#fff"/></pattern>
+<pattern id="h-gueules" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#fff"/><line x1="0" y1="0" x2="0" y2="5" stroke="#111" stroke-width="0.7"/></pattern>
+<pattern id="h-azur" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#fff"/><line x1="0" y1="0" x2="5" y2="0" stroke="#111" stroke-width="0.7"/></pattern>
+<pattern id="h-sable" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#fff"/><line x1="0" y1="0" x2="0" y2="5" stroke="#111" stroke-width="0.7"/><line x1="0" y1="0" x2="5" y2="0" stroke="#111" stroke-width="0.7"/></pattern>
+<pattern id="h-sinople" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#fff"/><line x1="0" y1="0" x2="5" y2="5" stroke="#111" stroke-width="0.7"/></pattern>
+<pattern id="h-pourpre" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#fff"/><line x1="5" y1="0" x2="0" y2="5" stroke="#111" stroke-width="0.7"/></pattern>`;
+function pieceSVG(){
+  const p=PIECES[S.piece]; if(!S.piece||!p||!p.draw) return "";
+  const fill=paint(S.pieceTinct);
+  if(S.piece==="bordure")
+    return `<path d="${SHIELD[S.forme]}" fill="none" stroke="${fill}" stroke-width="20"/><path d="${SHIELD[S.forme]}" fill="none" stroke="rgba(0,0,0,.3)" stroke-width="1"/>`;
+  return `<g fill="${fill}" stroke="rgba(0,0,0,.35)" stroke-width="1">${p.draw}</g>`;
+}
 function fieldRegions(){
-  const A=TINCTURES[S.A].hex, B=TINCTURES[S.B].hex;
+  const A=paint(S.A), B=paint(S.B);
   switch(S.partition){
     case "plein": return `<rect x="0" y="0" width="200" height="240" fill="${A}"/>`;
     case "parti": return `<rect x="0" y="0" width="100" height="240" fill="${A}"/><rect x="100" y="0" width="100" height="240" fill="${B}"/>`;
@@ -101,7 +153,7 @@ function fieldRegions(){
 }
 function placedCharge(key, tinctKey, x, y, scale, idns){
   const m=MEUBLES[key]; if(!key||!m) return "";
-  const tinct = TINCTURES[tinctKey].hex;
+  const tinct = HATCH ? "#ffffff" : TINCTURES[tinctKey].hex;   // en hachures : meuble en trait (blanc + contour)
   // 1) figure héraldique libre embarquée (Wikimedia) — teintée via currentColor
   const fig = (typeof MEUBLE_SVG!=="undefined") && MEUBLE_SVG[key];
   if(fig){
@@ -120,13 +172,14 @@ function placedCharge(key, tinctKey, x, y, scale, idns){
 }
 function render(){
   const path=SHIELD[S.forme];
+  const border = HATCH ? "#1a1a1a" : "#caa24a";
   const cimier = S.cimier ? placedCharge(S.cimier, S.cimierTinct, 100, -24, 0.9, "c") : "";
   const dev = S.devise ? `<g><path d="M18,250 Q100,234 182,250 Q100,268 18,250 Z" fill="#f3ead4" stroke="#caa12e"/><text x="100" y="254" text-anchor="middle" font-size="12" fill="#5a4a1e" font-style="italic">${escapeXML(S.devise)}</text></g>` : "";
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -56 200 328">
-    <defs><clipPath id="sh"><path d="${path}"/></clipPath></defs>
+    <defs>${HATCHES}<clipPath id="sh"><path d="${path}"/></clipPath></defs>
     ${cimier}
-    <g clip-path="url(#sh)">${fieldRegions()}${placedCharge(S.meuble, S.meubleTinct, 100, 114, 2.4, "m")}</g>
-    <path d="${path}" fill="none" stroke="#caa24a" stroke-width="3.5"/>
+    <g clip-path="url(#sh)">${fieldRegions()}${pieceSVG()}${placedCharge(S.meuble, S.meubleTinct, 100, 114, 2.4, "m")}</g>
+    <path d="${path}" fill="none" stroke="${border}" stroke-width="3.5"/>
     <path d="${path}" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="1" transform="translate(0,1)"/>
     ${dev}
   </svg>`;
@@ -151,6 +204,7 @@ function blason(){
   else if(S.partition==="tranche") champ=`Tranché ${de(t(S.A))} et ${de(t(S.B))}`;
   else champ=`Taillé ${de(t(S.A))} et ${de(t(S.B))}`;
   let parts=[champ];
+  if(S.piece) parts.push(`${PIECES[S.piece].bl} ${de(t(S.pieceTinct))}`);
   if(S.meuble) parts.push(`brochant ${art(S.meuble)} ${MEUBLES[S.meuble].nom.toLowerCase()} ${de(t(S.meubleTinct))}`);
   let str = parts.join(" ; ") + ".";
   if(S.cimier) str += ` Cimier : ${art(S.cimier)} ${MEUBLES[S.cimier].nom.toLowerCase()} ${de(t(S.cimierTinct))}.`;
@@ -166,6 +220,7 @@ function senses(){
   h+=item("Champ — "+PARTITIONS[S.partition].nom, PARTITIONS[S.partition]);
   h+=item("Émail A — "+TINCTURES[S.A].nom, TINCTURES[S.A]);
   if(PARTITIONS[S.partition].regions>1) h+=item("Émail B — "+TINCTURES[S.B].nom, TINCTURES[S.B]);
+  if(S.piece) h+=item("Pièce — "+PIECES[S.piece].nom, PIECES[S.piece]);
   if(S.meuble) h+=item("Meuble — "+MEUBLES[S.meuble].nom, MEUBLES[S.meuble]);
   if(S.cimier) h+=item("Cimier — "+MEUBLES[S.cimier].nom, MEUBLES[S.cimier]);
   return h;
@@ -184,6 +239,12 @@ function tinctureWarn(){
     const fonds = P.regions>1 ? [TINCTURES[S.A].type, TINCTURES[S.B].type] : [TINCTURES[S.A].type];
     if(mt!=="amphibie" && fonds.every(f=>f===mt && f!=="amphibie")) w.push(`Le meuble (${TINCTURES[S.meubleTinct].nom}) est de même nature que son fond — ${mt==="métal"?"métal sur métal":"émail sur émail"}. (Sur une partition métal+couleur, une pièce brochant peut être tolérée, ou « de l'un en l'autre ».)`);
   }
+  // pièce honorable vs champ
+  if(S.piece){
+    const pt=TINCTURES[S.pieceTinct].type;
+    const fonds = P.regions>1 ? [TINCTURES[S.A].type, TINCTURES[S.B].type] : [TINCTURES[S.A].type];
+    if(pt!=="amphibie" && fonds.every(f=>f===pt && f!=="amphibie")) w.push(`La pièce honorable (${TINCTURES[S.pieceTinct].nom}) est de même nature que le champ — ${pt==="métal"?"métal sur métal":"émail sur émail"}.`);
+  }
   const el=document.getElementById("tincture-warning");
   if(w.length){ el.hidden=false; el.innerHTML="⚠︎ "+w.join("<br>⚠︎ "); } else el.hidden=true;
 }
@@ -196,6 +257,8 @@ function fillSelects(){
   const tinctOpts = sel => Object.entries(TINCTURES).map(([k,o])=>opt(k,o.nom,sel)).join("");
   document.getElementById("tinctureA").innerHTML = tinctOpts(S.A);
   document.getElementById("tinctureB").innerHTML = tinctOpts(S.B);
+  document.getElementById("piece").innerHTML = Object.entries(PIECES).map(([k,o])=>opt(k,o.nom,S.piece)).join("");
+  document.getElementById("pieceTinct").innerHTML = tinctOpts(S.pieceTinct);
   document.getElementById("meubleTinct").innerHTML = tinctOpts(S.meubleTinct);
   document.getElementById("cimierTinct").innerHTML = tinctOpts(S.cimierTinct);
   const meubleOpts = sel => Object.entries(MEUBLES).map(([k,o])=>opt(k,o.nom + (o.rendu===null&&k?" (figure à venir)":""),sel)).join("");
@@ -206,8 +269,16 @@ function fillSelects(){
 function bind(){
   const set=(id,key)=>document.getElementById(id).addEventListener("change",e=>{S[key]=e.target.value; update();});
   set("forme","forme"); set("partition","partition"); set("tinctureA","A"); set("tinctureB","B");
+  set("piece","piece"); set("pieceTinct","pieceTinct");
   set("meuble","meuble"); set("meubleTinct","meubleTinct"); set("cimier","cimier"); set("cimierTinct","cimierTinct");
   document.getElementById("devise").addEventListener("input",e=>{S.devise=e.target.value; update();});
+  document.getElementById("toggle-hatch").addEventListener("click",()=>{
+    HATCH=!HATCH;
+    const b=document.getElementById("toggle-hatch");
+    b.classList.toggle("active",HATCH);
+    b.textContent = HATCH ? "🎨 Couleurs" : "▦ Hachures (N&B)";
+    render();
+  });
   document.getElementById("dl-svg").addEventListener("click",()=>{
     const blob=new Blob([document.getElementById("ecu").innerHTML],{type:"image/svg+xml"});
     const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="blason.svg"; a.click();
