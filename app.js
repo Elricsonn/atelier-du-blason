@@ -222,15 +222,16 @@ function blason(){
 
 // ---------- Lecture spirituelle ----------
 function senses(){
-  const item=(label,o)=> o&&o.lum ? `<div class="item"><b>${label} :</b> <span class="lum">✦ ${o.lum}</span>${o.dechu?`<span class="dechu">⟂ ${o.dechu}</span>`:""}${o.page?`<span class="pg">— p. ${o.page}</span>`:""}</div>` : "";
+  const item=(label,o,cls="")=> o&&o.lum ? `<div class="item${cls?" "+cls:""}"><b>${label} :</b> <span class="lum">✦ ${o.lum}</span>${o.dechu?`<span class="dechu">⟂ ${o.dechu}</span>`:""}${o.page?`<span class="pg">— p. ${o.page}</span>`:""}</div>` : "";
+  const T=k=>TINCTURES[k];
   let h="";
   h+=item("Forme — "+FORMES[S.forme].nom, FORMES[S.forme]);
   h+=item("Champ — "+PARTITIONS[S.partition].nom, PARTITIONS[S.partition]);
-  h+=item("Émail A — "+TINCTURES[S.A].nom, TINCTURES[S.A]);
-  if(PARTITIONS[S.partition].regions>1) h+=item("Émail B — "+TINCTURES[S.B].nom, TINCTURES[S.B]);
-  if(S.piece) h+=item("Pièce — "+PIECES[S.piece].nom, PIECES[S.piece]);
-  if(S.meuble) h+=item("Meuble — "+MEUBLES[S.meuble].nom, MEUBLES[S.meuble]);
-  if(S.cimier) h+=item("Cimier — "+MEUBLES[S.cimier].nom, MEUBLES[S.cimier]);
+  h+=item("Émail A — "+T(S.A).nom, T(S.A));
+  if(PARTITIONS[S.partition].regions>1) h+=item("Émail B — "+T(S.B).nom, T(S.B));
+  if(S.piece){ h+=item("Pièce — "+PIECES[S.piece].nom, PIECES[S.piece]); h+=item("↳ "+T(S.pieceTinct).nom, T(S.pieceTinct), "sub"); }
+  if(S.meuble){ h+=item("Meuble — "+MEUBLES[S.meuble].nom, MEUBLES[S.meuble]); h+=item("↳ "+T(S.meubleTinct).nom, T(S.meubleTinct), "sub"); }
+  if(S.cimier){ h+=item("Cimier — "+MEUBLES[S.cimier].nom, MEUBLES[S.cimier]); h+=item("↳ "+T(S.cimierTinct).nom, T(S.cimierTinct), "sub"); }
   return h;
 }
 
