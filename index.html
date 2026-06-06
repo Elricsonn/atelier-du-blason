@@ -34,6 +34,7 @@
 <main>
   <!-- COLONNE 1 — contrôles guidés -->
   <section id="controls" aria-label="Construction">
+    <button id="open-intro" type="button">✦ Me laisser guider par l'introspection</button>
     <fieldset>
       <legend>1 · La forme</legend>
       <select id="forme"></select>
@@ -98,6 +99,16 @@
     <p class="src">Sens lumineux ✦ et déchu ⟂ tirés du livre (n° de page indiqués). Règle de tincture : ni métal sur métal, ni émail sur émail.</p>
   </section>
 </main>
+
+<!-- INTROSPECTION — overlay guidé -->
+<div id="intro" hidden aria-label="Introspection">
+  <div class="intro-card">
+    <button class="intro-close" id="intro-close" type="button" aria-label="Fermer">✕</button>
+    <div class="intro-orn">✦</div>
+    <div id="intro-dots" class="intro-dots"></div>
+    <div id="intro-body"></div>
+  </div>
+</div>
 
 <footer>L'Atelier du Blason — mise en pratique de <em>La Voie du Blason</em>. Brouillon de travail, enrichissement en cours.</footer>
 

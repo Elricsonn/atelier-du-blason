@@ -135,20 +135,25 @@ function render(){
 function escapeXML(s){ return s.replace(/[<>&"']/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;","\"":"&quot;","'":"&#39;"}[c])); }
 
 // ---------- Blasonnement ----------
+// genre des meubles (pour l'article) — féminin par défaut, masculin listés
+const MEUBLES_MASC = new Set(["lion","leopard","pont","coeur","soleil","lys"]);
 function blason(){
   const t=k=>TINCTURES[k].nom.split(" ")[0].toLowerCase();
+  const de=n=>/^[aeiouyàâäéèêëîïôöûü]/i.test(n)?`d'${n}`:`de ${n}`;   // élision
+  const art=k=>MEUBLES_MASC.has(k)?"un":"une";                        // genre
+  const Cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
   let f = FORMES[S.forme].nom.toLowerCase();
   let champ;
-  if(S.partition==="plein") champ=`De ${t(S.A)}`;
-  else if(S.partition==="coupe") champ=`Coupé : au chef de ${t(S.A)}, en pointe de ${t(S.B)}`;
-  else if(S.partition==="parti") champ=`Parti : à dextre de ${t(S.A)}, à senestre de ${t(S.B)}`;
-  else if(S.partition==="ecartele") champ=`Écartelé de ${t(S.A)} et de ${t(S.B)}`;
-  else if(S.partition==="tranche") champ=`Tranché de ${t(S.A)} et de ${t(S.B)}`;
-  else champ=`Taillé de ${t(S.A)} et de ${t(S.B)}`;
+  if(S.partition==="plein") champ=Cap(de(t(S.A)));
+  else if(S.partition==="coupe") champ=`Coupé : au chef ${de(t(S.A))}, en pointe ${de(t(S.B))}`;
+  else if(S.partition==="parti") champ=`Parti : à dextre ${de(t(S.A))}, à senestre ${de(t(S.B))}`;
+  else if(S.partition==="ecartele") champ=`Écartelé ${de(t(S.A))} et ${de(t(S.B))}`;
+  else if(S.partition==="tranche") champ=`Tranché ${de(t(S.A))} et ${de(t(S.B))}`;
+  else champ=`Taillé ${de(t(S.A))} et ${de(t(S.B))}`;
   let parts=[champ];
-  if(S.meuble) parts.push(`brochant une ${MEUBLES[S.meuble].nom.toLowerCase()} de ${t(S.meubleTinct)}`);
+  if(S.meuble) parts.push(`brochant ${art(S.meuble)} ${MEUBLES[S.meuble].nom.toLowerCase()} ${de(t(S.meubleTinct))}`);
   let str = parts.join(" ; ") + ".";
-  if(S.cimier) str += ` Cimier : une ${MEUBLES[S.cimier].nom.toLowerCase()} de ${t(S.cimierTinct)}.`;
+  if(S.cimier) str += ` Cimier : ${art(S.cimier)} ${MEUBLES[S.cimier].nom.toLowerCase()} ${de(t(S.cimierTinct))}.`;
   if(S.devise) str += ` Devise : « ${S.devise} ».`;
   return `(${f}) ${str}`;
 }
@@ -220,3 +225,83 @@ function update(){
   document.getElementById("senses").innerHTML=senses(); tinctureWarn();
 }
 fillSelects(); bind(); update();
+
+// ---------- Mode introspection (guidé : 4 questions → un écu suggéré) ----------
+const INTRO = [
+  { q:"Vers quoi ton âme tend-elle ?", sub:"Ce qui te couronne et te guide.",
+    options:[
+      {label:"La Lumière, la vérité", hint:"Sol Justitiæ — un soleil d'or", cimier:"soleil", cimierTinct:"or",
+       why:"la <b>Lumière et la vérité</b> — un <b>soleil d'or</b> te couronne (le <i>Sol Justitiæ</i>, Cœur du Christ-Roi)."},
+      {label:"Un guide dans la nuit", hint:"Stella Maris — une étoile d'argent", cimier:"etoile", cimierTinct:"argent",
+       why:"un <b>guide dans la nuit</b> — une <b>étoile d'argent</b> te couronne (la <i>Stella Maris</i>, l'Étoile du Berger)."},
+      {label:"La paix, le silence intérieur", hint:"Miroir de Justice — une lune d'argent", cimier:"lune", cimierTinct:"argent",
+       why:"la <b>paix et le silence</b> — une <b>lune d'argent</b> te couronne (le Miroir de Justice)."},
+      {label:"L'amour qui s'offre", hint:"« en odeur de sainteté » — une rose d'or", cimier:"rose", cimierTinct:"or",
+       why:"l'<b>amour qui s'offre</b> — une <b>rose d'or</b> te couronne (« en odeur de sainteté »)."},
+    ]},
+  { q:"Quelle vertu te tient debout ?", sub:"Elle donnera sa couleur à ton champ.",
+    options:[
+      {label:"La Foi", hint:"l'or", email:"or", why:"La <b>Foi</b> te tient debout : elle donne à ton champ l'<b>or</b>, perfection et lumière."},
+      {label:"L'Espérance", hint:"le sinople", email:"sinople", why:"L'<b>Espérance</b> te tient debout : elle donne à ton champ le <b>sinople</b>, vert de la jeunesse de l'âme."},
+      {label:"La Charité", hint:"le gueules", email:"gueules", why:"La <b>Charité</b> te tient debout : elle donne à ton champ le <b>gueules</b>, rouge de l'amour ardent."},
+      {label:"L'humilité, le renoncement", hint:"le sable", email:"sable", why:"L'<b>humilité</b> te tient debout : elle donne à ton champ le <b>sable</b>, l'humus où germent les vertus."},
+    ]},
+  { q:"Quelle est ta place parmi les autres ?", sub:"Ta vocation prendra une figure.",
+    options:[
+      {label:"Veiller, garder", hint:"la tour", meuble:"tour", why:"Ta place est de <b>veiller et garder</b> : ta figure est la <b>tour</b>, ascension et garde inexpugnable de l'être."},
+      {label:"Relier, réconcilier", hint:"le pont", meuble:"pont", why:"Ta place est de <b>relier</b> : ta figure est le <b>pont</b>, qui joint les deux rives, le Ciel et la terre."},
+      {label:"Éclairer, éveiller", hint:"la lampe", meuble:"lampe", why:"Ta place est d'<b>éclairer</b> : ta figure est la <b>lampe</b>, celle des Vierges sages tenue allumée dans la nuit."},
+      {label:"Protéger, combattre pour les faibles", hint:"le lion", meuble:"lion", why:"Ta place est de <b>protéger</b> : ta figure est le <b>lion</b>, le <i>Miles Christi</i>, courage au service des faibles."},
+    ]},
+  { q:"Comment te tiens-tu ?", sub:"La structure de ton écu.",
+    options:[
+      {label:"D'un seul tenant, unifié", hint:"plein", partition:"plein", why:"Tu te tiens <b>d'un seul tenant</b> : ton champ est <b>plein</b>, l'unité et la simplicité de l'être."},
+      {label:"Tendu entre le Ciel et la terre", hint:"coupé", partition:"coupe", why:"Tu te tiens <b>tendu entre le Ciel et la terre</b> : ton champ est <b>coupé</b> — l'or du Ciel en chef, le sable de la terre en pointe — et ta vertu colore la figure qui broche entre les deux."},
+      {label:"Entre deux forces à unir", hint:"parti", partition:"parti", why:"Tu te tiens <b>entre deux forces à unir</b> : ton champ est <b>parti</b>, et la ligne qui les joint est l'Agapè, la Charité."},
+    ]},
+];
+const METALS = new Set(["or","argent"]);
+let introAns = [null,null,null,null];
+
+function composeFromAnswers(a){
+  const virtue=a[1].email, partition=a[3].partition;
+  let A,B,meubleTinct;
+  if(partition==="plein"){ A=virtue; B=virtue; meubleTinct = METALS.has(A)?"gueules":"or"; }
+  else if(partition==="coupe"){ A="or"; B="sable"; meubleTinct = (virtue==="or"||virtue==="sable")?"argent":virtue; }
+  else { A=virtue; B=METALS.has(virtue)?"azur":"argent"; meubleTinct = (A!=="or"&&B!=="or")?"or":"argent"; }
+  return { forme:"demi-amande", partition, A, B, meuble:a[2].meuble, meubleTinct, cimier:a[0].cimier, cimierTinct:a[0].cimierTinct, devise:"" };
+}
+function renderIntroStep(i){
+  const Q=INTRO[i];
+  document.getElementById("intro-dots").innerHTML =
+    INTRO.map((_,k)=>`<span class="dot${k<i?' done':''}${k===i?' cur':''}">✦</span>`).join("");
+  const opts=Q.options.map((o,oi)=>
+    `<button class="intro-opt" type="button" data-oi="${oi}"><span class="opt-l">${o.label}</span><span class="opt-h">${o.hint}</span></button>`).join("");
+  document.getElementById("intro-body").innerHTML =
+    `<p class="intro-step">Question ${i+1} / 4</p><h2 class="intro-h">${Q.q}</h2><p class="intro-sub">${Q.sub}</p><div class="intro-opts">${opts}</div>`;
+  document.querySelectorAll(".intro-opt").forEach(b=>b.addEventListener("click",()=>{
+    introAns[i]=Q.options[+b.dataset.oi];
+    if(i<INTRO.length-1) renderIntroStep(i+1); else showIntroResult();
+  }));
+}
+function showIntroResult(){
+  Object.assign(S, composeFromAnswers(introAns)); fillSelects(); update();
+  const ecu=document.getElementById("ecu").innerHTML;
+  document.getElementById("intro-dots").innerHTML="";
+  document.getElementById("intro-body").innerHTML =
+    `<h2 class="intro-h">Voici tes armes</h2>
+     <div class="intro-ecu">${ecu}</div>
+     <p class="intro-bl">${blason()}</p>
+     <div class="intro-why">${introAns.map(a=>`<p>✦ ${a.why}</p>`).join("")}</div>
+     <div class="intro-actions">
+       <button id="intro-enter" type="button">Entrer dans l'atelier</button>
+       <button id="intro-again" type="button" class="ghost">Recommencer</button>
+     </div>`;
+  document.getElementById("intro-enter").addEventListener("click", closeIntro);
+  document.getElementById("intro-again").addEventListener("click", ()=>{ introAns=[null,null,null,null]; renderIntroStep(0); });
+}
+function openIntro(){ introAns=[null,null,null,null]; document.getElementById("intro").hidden=false; renderIntroStep(0); }
+function closeIntro(){ document.getElementById("intro").hidden=true; }
+document.getElementById("open-intro").addEventListener("click", openIntro);
+document.getElementById("intro-close").addEventListener("click", closeIntro);
+document.getElementById("intro").addEventListener("click", e=>{ if(e.target.id==="intro") closeIntro(); });

@@ -106,3 +106,68 @@ button:hover{ color:#1a1200; background:var(--gold); border-color:var(--gold); }
 .src{ color:var(--muted); font-size:.78rem; margin-top:.9rem; font-style:italic; }
 .warn{ background:rgba(217,138,58,.1); border:1px solid var(--warn); color:#eab26a;
   border-radius:8px; padding:.5rem .7rem; font-size:.86rem; }
+
+/* ── Mode introspection ── */
+#open-intro{
+  width:100%; margin:0 0 1rem; padding:.7rem;
+  font-family:"Cinzel",serif; font-size:.86rem; letter-spacing:.04em; cursor:pointer;
+  color:#1a1200; background:linear-gradient(180deg, var(--gold), var(--gold-deep));
+  border:1px solid var(--gold); border-radius:8px; transition:.15s;
+  box-shadow:0 2px 12px rgba(212,168,75,.18);
+}
+#open-intro:hover{ filter:brightness(1.08); box-shadow:0 2px 18px rgba(212,168,75,.32); }
+
+#intro{
+  position:fixed; inset:0; z-index:9000; display:flex; align-items:center; justify-content:center;
+  padding:1.2rem; overflow:auto;
+  background:radial-gradient(ellipse at 50% 30%, rgba(20,15,4,.92), rgba(6,4,0,.96));
+  backdrop-filter:blur(3px);
+}
+#intro[hidden]{ display:none; }
+.intro-card{
+  position:relative; width:min(560px,94vw); max-height:92vh; overflow:auto; text-align:center;
+  padding:2rem 1.8rem 1.7rem;
+  background:linear-gradient(180deg, rgba(40,30,10,.7), rgba(20,15,6,.82));
+  border:1px solid var(--panel-edge); border-radius:14px;
+  box-shadow:0 0 60px rgba(0,0,0,.85), inset 0 0 34px rgba(212,168,75,.05);
+}
+.intro-close{
+  position:absolute; top:.6rem; right:.7rem; width:1.9rem; height:1.9rem; padding:0;
+  font-size:.9rem; line-height:1; color:var(--muted); background:transparent;
+  border:1px solid transparent; border-radius:6px; cursor:pointer;
+}
+.intro-close:hover{ color:var(--gold); border-color:rgba(212,168,75,.35); }
+.intro-orn{ color:var(--gold); opacity:.6; font-size:1.1rem; letter-spacing:.4em; }
+.intro-dots{ display:flex; gap:.5rem; justify-content:center; margin:.6rem 0 1.1rem; }
+.intro-dots .dot{ color:#5a4a22; font-size:.8rem; transition:.2s; }
+.intro-dots .dot.done{ color:var(--gold-deep); }
+.intro-dots .dot.cur{ color:var(--gold); transform:scale(1.35); text-shadow:0 0 10px rgba(212,168,75,.5); }
+.intro-step{ color:var(--muted); font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; }
+.intro-h{ font-family:"Cinzel",serif; color:var(--gold); font-size:1.4rem; margin:.3rem 0 .2rem;
+  text-shadow:0 0 16px rgba(212,168,75,.22); }
+.intro-sub{ color:var(--muted); font-style:italic; font-size:.92rem; margin-bottom:1.3rem; }
+.intro-opts{ display:flex; flex-direction:column; gap:.7rem; }
+.intro-opt{
+  display:flex; flex-direction:column; gap:.15rem; align-items:center; text-align:center;
+  padding:.8rem 1rem; cursor:pointer; transition:.16s;
+  color:var(--ink); background:rgba(212,168,75,.04);
+  border:1px solid rgba(212,168,75,.28); border-radius:9px;
+}
+.intro-opt:hover{ background:rgba(212,168,75,.12); border-color:var(--gold); transform:translateY(-1px); }
+.intro-opt .opt-l{ font-family:"Cinzel",serif; font-size:.96rem; color:var(--gold); letter-spacing:.02em; }
+.intro-opt .opt-h{ font-size:.8rem; color:var(--muted); font-style:italic; }
+
+.intro-ecu{ margin:.4rem auto .6rem; }
+.intro-ecu svg{ width:170px; height:auto; filter:drop-shadow(0 6px 20px rgba(0,0,0,.6)); }
+.intro-bl{ font-style:italic; color:#f0e3c2; font-size:.9rem; margin:.2rem auto 1rem; max-width:42ch; }
+.intro-why{ text-align:left; margin:0 auto 1.2rem; max-width:46ch; }
+.intro-why p{ font-size:.9rem; color:var(--ink); margin:.5rem 0; line-height:1.5; }
+.intro-why b{ color:var(--gold); }
+.intro-actions{ display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; }
+.intro-actions button{
+  font-family:"Cinzel",serif; font-size:.86rem; letter-spacing:.03em; cursor:pointer; padding:.55rem 1.1rem;
+  color:#1a1200; background:var(--gold); border:1px solid var(--gold); border-radius:8px; transition:.15s;
+}
+.intro-actions button:hover{ filter:brightness(1.08); }
+.intro-actions button.ghost{ color:var(--gold); background:transparent; }
+.intro-actions button.ghost:hover{ background:rgba(212,168,75,.1); }
