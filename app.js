@@ -31,6 +31,8 @@ const PARTITIONS = {
   "ecartele": { nom:"Écartelé", regions:2, lum:"Parti + coupé : la Croix au cœur de l'être ; le rassemblement de plusieurs héritages.", dechu:"écartèlement, fractures intérieures.", page:85 },
   "tranche":  { nom:"Tranché (diagonale)", regions:2, lum:"La bande (montée à dextre) = l'élan, le baudrier du chevalier.", dechu:"", page:83 },
   "taille":   { nom:"Taillé (diagonale inverse)", regions:2, lum:"La barre — reflet du tranché.", dechu:"souvent brisure / ligne de bâtardise.", page:83 },
+  "ecartele-sautoir": { nom:"Écartelé en sautoir (croix de St-André)", regions:2, lum:"Division en X : l'élan vital et spirituel, l'âme ardente ; le X (chi) du Christ, signe de la Résurrection ; l'allègement du moi, l'esprit d'enfance.", dechu:"dispersion, éclatement, le saut de prédateur sur les sensations.", page:87 },
+  "gironne":  { nom:"Gironné (huit girons)", regions:2, lum:"Huit girons rayonnant du centre : le tournoiement missionnaire, la Parole irradiant du cœur immobile vers les directions de l'espace.", dechu:"rotation à vide, le vent contraire au Souffle de l'Esprit.", page:88 },
 };
 
 // rendu: clé SVG dessinée, ou null (à intégrer depuis une source libre plus tard)
@@ -118,6 +120,15 @@ const PIECES = {
   "bordure": { nom:"Bordure", bl:"à la bordure", page:null,
                lum:"L'enceinte qui ceint et garde l'écu : la muraille de la Cité, la vigilance qui protège le dedans.", dechu:"enfermement, repli sur soi.",
                draw:"BORDURE" },
+  "pairle":  { nom:"Pairle", bl:"au pairle", page:99,
+               lum:"Le Y de l'orant (bras levés vers le Ciel), le pallium de l'évêque, la croix du bon larron ; un calice ouvert qui reçoit la Lumière.", dechu:"accaparement, avarice spirituelle (le gousset-bourse).",
+               draw:'<path d="M86,116 L0,0 L42,0 L100,80 L158,0 L200,0 L114,116 L114,240 L86,240 Z"/>' },
+  "franc-quartier": { nom:"Franc-quartier", bl:"au franc-quartier", page:101,
+               lum:"Le carré en chef-dextre : l'oculus, la fenêtre par où descend la lumière de grâce ; le « regard » céleste, marque d'honneur.", dechu:"la fenêtre murée, le refus de la lumière.",
+               draw:'<rect x="0" y="0" width="100" height="100"/>' },
+  "pile":    { nom:"Pile", bl:"à la pile", page:102,
+               lum:"Le long triangle descendant du chef : la langue de feu pentecôtique, la comète (étoile du Berger) qui ensemence l'âme de Lumière ; l'Espérance.", dechu:"la chute qui s'accélère, le précipice sans fond.",
+               draw:'<polygon points="67,0 133,0 100,230"/>' },
 };
 
 // ---------- État ----------
@@ -157,6 +168,8 @@ function fieldRegions(){
     case "ecartele": return `<rect x="0" y="0" width="100" height="120" fill="${A}"/><rect x="100" y="0" width="100" height="120" fill="${B}"/><rect x="0" y="120" width="100" height="120" fill="${B}"/><rect x="100" y="120" width="100" height="120" fill="${A}"/>`;
     case "tranche": return `<polygon points="0,0 200,0 200,240" fill="${A}"/><polygon points="0,0 200,240 0,240" fill="${B}"/>`;
     case "taille": return `<polygon points="0,0 200,0 0,240" fill="${A}"/><polygon points="200,0 200,240 0,240" fill="${B}"/>`;
+    case "ecartele-sautoir": return `<polygon points="0,0 200,0 100,120" fill="${A}"/><polygon points="0,240 200,240 100,120" fill="${A}"/><polygon points="0,0 0,240 100,120" fill="${B}"/><polygon points="200,0 200,240 100,120" fill="${B}"/>`;
+    case "gironne": { const P=[[100,0],[200,0],[200,120],[200,240],[100,240],[0,240],[0,120],[0,0]]; let g=""; for(let i=0;i<8;i++){const a=P[i],b=P[(i+1)%8]; g+=`<polygon points="100,120 ${a[0]},${a[1]} ${b[0]},${b[1]}" fill="${i%2?B:A}"/>`;} return g; }
   }
 }
 function placedCharge(key, tinctKey, x, y, scale, idns){
@@ -210,6 +223,8 @@ function blason(){
   else if(S.partition==="parti") champ=`Parti : à dextre ${de(t(S.A))}, à senestre ${de(t(S.B))}`;
   else if(S.partition==="ecartele") champ=`Écartelé ${de(t(S.A))} et ${de(t(S.B))}`;
   else if(S.partition==="tranche") champ=`Tranché ${de(t(S.A))} et ${de(t(S.B))}`;
+  else if(S.partition==="ecartele-sautoir") champ=`Écartelé en sautoir ${de(t(S.A))} et ${de(t(S.B))}`;
+  else if(S.partition==="gironne") champ=`Gironné ${de(t(S.A))} et ${de(t(S.B))}`;
   else champ=`Taillé ${de(t(S.A))} et ${de(t(S.B))}`;
   let parts=[champ];
   if(S.piece) parts.push(`${PIECES[S.piece].bl} ${de(t(S.pieceTinct))}`);
