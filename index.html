@@ -63,12 +63,9 @@
     </fieldset>
 
     <fieldset>
-      <legend>4 · Le meuble central <span class="hint">(brochant)</span></legend>
-      <select id="meuble"></select>
-      <div class="row">
-        <label>Tincture</label>
-        <select id="meubleTinct" class="tinct"></select>
-      </div>
+      <legend>4 · Les figures <span class="hint">(meubles brochant · plusieurs possibles)</span></legend>
+      <div id="charges-list"></div>
+      <button type="button" id="add-charge" class="add-charge">+ Ajouter une figure</button>
     </fieldset>
 
     <fieldset>
@@ -122,8 +119,8 @@
 
 <footer>L'Atelier du Blason — mise en pratique de <em>La Voie du Blason</em>. Brouillon de travail, enrichissement en cours.</footer>
 
-<script src="meubles.js?v=2"></script>
-<script src="app.js?v=2"></script>
+<script src="meubles.js?v=3"></script>
+<script src="app.js?v=3"></script>
 <script>
 /* Seuil rituélique — sha256 du mot (minuscules), modèle Loge RER. Repli si pas de SubtleCrypto. */
 (function(){

@@ -136,7 +136,20 @@ const PIECES = {
 
 // ---------- État ----------
 // État de départ : exemple GÉNÉRIQUE (aucune donnée personnelle).
-const S = { forme:"demi-amande", partition:"parti", A:"gueules", B:"argent", piece:"", pieceTinct:"or", meuble:"lys", meubleTinct:"or", cimier:"etoile", cimierTinct:"argent", devise:"" };
+// charges : liste de figures, chacune {k: meuble, t: teinture, p: position}
+const S = { forme:"demi-amande", partition:"parti", A:"gueules", B:"argent", piece:"", pieceTinct:"or", charges:[{k:"lys",t:"or",p:"coeur"}], cimier:"etoile", cimierTinct:"argent", devise:"" };
+
+// ---------- Positions des figures dans l'écu (coordonnées du champ + échelle + phrase de blason) ----------
+// dextre = côté du porteur = NOTRE gauche (x < 100). senestre = notre droite (x > 100).
+const POSITIONS = {
+  "coeur":           { nom:"Cœur (centre)",                 x:100, y:110, s:2.4,  bl:"" },
+  "chef":            { nom:"En chef (haut, centre)",        x:100, y:44,  s:1.5,  bl:"en chef" },
+  "pointe":          { nom:"En pointe (bas, centre)",       x:100, y:184, s:1.4,  bl:"en pointe" },
+  "chef-dextre":     { nom:"Quartier 1 — chef dextre",      x:58,  y:56,  s:1.55, bl:"au canton dextre du chef" },
+  "chef-senestre":   { nom:"Quartier 2 — chef senestre",    x:142, y:56,  s:1.55, bl:"au canton senestre du chef" },
+  "pointe-dextre":   { nom:"Quartier 3 — pointe dextre",    x:70,  y:162, s:1.4,  bl:"au canton dextre de la pointe" },
+  "pointe-senestre": { nom:"Quartier 4 — pointe senestre",  x:130, y:162, s:1.4,  bl:"au canton senestre de la pointe" },
+};
 
 // ---------- Rendu de l'écu ----------
 let HATCH=false;                       // mode hachures héraldiques (noir & blanc, convention Petra Sancta)
@@ -202,7 +215,7 @@ function render(){
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -56 200 328">
     <defs>${HATCHES}${FOURRURES}<clipPath id="sh"><path d="${path}"/></clipPath></defs>
     ${cimier}
-    <g clip-path="url(#sh)">${fieldRegions()}${pieceSVG()}${placedCharge(S.meuble, S.meubleTinct, 100, 114, 2.4, "m")}</g>
+    <g clip-path="url(#sh)">${fieldRegions()}${pieceSVG()}${S.charges.map((c,i)=>{const P=POSITIONS[c.p]||POSITIONS.coeur; return placedCharge(c.k, c.t, P.x, P.y, P.s, "m"+i);}).join("")}</g>
     <path d="${path}" fill="none" stroke="${border}" stroke-width="3.5"/>
     <path d="${path}" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="1" transform="translate(0,1)"/>
     ${dev}
@@ -231,7 +244,11 @@ function blason(){
   else champ=`Taillé ${de(t(S.A))} et ${de(t(S.B))}`;
   let parts=[champ];
   if(S.piece) parts.push(`${PIECES[S.piece].bl} ${de(t(S.pieceTinct))}`);
-  if(S.meuble) parts.push(`brochant ${art(S.meuble)} ${MEUBLES[S.meuble].nom.toLowerCase()} ${de(t(S.meubleTinct))}`);
+  const chs = S.charges.filter(c=>c.k);
+  if(chs.length){
+    const liste = chs.map(c=>{ const P=POSITIONS[c.p]; return `${art(c.k)} ${MEUBLES[c.k].nom.toLowerCase()} ${de(t(c.t))}${P&&P.bl?` ${P.bl}`:""}`; }).join(" et ");
+    parts.push(`brochant ${liste}`);
+  }
   let str = parts.join(" ; ") + ".";
   if(S.cimier) str += ` Cimier : ${art(S.cimier)} ${MEUBLES[S.cimier].nom.toLowerCase()} ${de(t(S.cimierTinct))}.`;
   if(S.devise) str += ` Devise : « ${S.devise} ».`;
@@ -248,7 +265,7 @@ function senses(){
   h+=item("Émail A — "+T(S.A).nom, T(S.A));
   if(PARTITIONS[S.partition].regions>1) h+=item("Émail B — "+T(S.B).nom, T(S.B));
   if(S.piece){ h+=item("Pièce — "+PIECES[S.piece].nom, PIECES[S.piece]); h+=item("↳ "+T(S.pieceTinct).nom, T(S.pieceTinct), "sub"); }
-  if(S.meuble){ h+=item("Meuble — "+MEUBLES[S.meuble].nom, MEUBLES[S.meuble]); h+=item("↳ "+T(S.meubleTinct).nom, T(S.meubleTinct), "sub"); }
+  S.charges.filter(c=>c.k).forEach(c=>{ const pos=POSITIONS[c.p]&&POSITIONS[c.p].bl; h+=item("Meuble — "+MEUBLES[c.k].nom+(pos?` (${pos})`:""), MEUBLES[c.k]); h+=item("↳ "+T(c.t).nom, T(c.t), "sub"); });
   if(S.cimier){ h+=item("Cimier — "+MEUBLES[S.cimier].nom, MEUBLES[S.cimier]); h+=item("↳ "+T(S.cimierTinct).nom, T(S.cimierTinct), "sub"); }
   return h;
 }
@@ -260,12 +277,12 @@ function tinctureWarn(){
     const a=TINCTURES[S.A].type, b=TINCTURES[S.B].type;
     if(a===b && a!=="amphibie" && a!=="fourrure") w.push(`Champ : ${TINCTURES[S.A].nom} et ${TINCTURES[S.B].nom} sont tous deux ${a==="métal"?"des métaux":"des émaux"} — la règle veut « ni métal sur métal, ni émail sur émail ».`);
   }
-  // meuble central vs fond qu'il touche (approx : sur partition, il touche les 2 régions)
-  if(S.meuble && MEUBLES[S.meuble].rendu){
-    const mt=TINCTURES[S.meubleTinct].type;
+  // figures vs fond qu'elles touchent (approx : sur partition, elles touchent les 2 régions)
+  S.charges.filter(c=>c.k && MEUBLES[c.k].rendu).forEach(c=>{
+    const mt=TINCTURES[c.t].type;
     const fonds = P.regions>1 ? [TINCTURES[S.A].type, TINCTURES[S.B].type] : [TINCTURES[S.A].type];
-    if(mt!=="amphibie" && mt!=="fourrure" && fonds.every(f=>f===mt && f!=="amphibie" && f!=="fourrure")) w.push(`Le meuble (${TINCTURES[S.meubleTinct].nom}) est de même nature que son fond — ${mt==="métal"?"métal sur métal":"émail sur émail"}. (Sur une partition métal+couleur, une pièce brochant peut être tolérée, ou « de l'un en l'autre ».)`);
-  }
+    if(mt!=="amphibie" && mt!=="fourrure" && fonds.every(f=>f===mt && f!=="amphibie" && f!=="fourrure")) w.push(`La figure ${MEUBLES[c.k].nom} (${TINCTURES[c.t].nom}) est de même nature que son fond — ${mt==="métal"?"métal sur métal":"émail sur émail"}. (Sur une partition métal+couleur, une figure brochant peut être tolérée, ou « de l'un en l'autre ».)`);
+  });
   // pièce honorable vs champ
   if(S.piece){
     const pt=TINCTURES[S.pieceTinct].type;
@@ -287,18 +304,39 @@ function fillSelects(){
   document.getElementById("tinctureB").innerHTML = tinctOpts(S.B);
   document.getElementById("piece").innerHTML = Object.entries(PIECES).map(([k,o])=>opt(k,o.nom,S.piece)).join("");
   document.getElementById("pieceTinct").innerHTML = tinctOpts(S.pieceTinct);
-  document.getElementById("meubleTinct").innerHTML = tinctOptsPlain(S.meubleTinct);
   document.getElementById("cimierTinct").innerHTML = tinctOptsPlain(S.cimierTinct);
   const meubleOpts = sel => Object.entries(MEUBLES).map(([k,o])=>opt(k,o.nom + (o.rendu===null&&k?" (figure à venir)":""),sel)).join("");
-  document.getElementById("meuble").innerHTML = meubleOpts(S.meuble);
   document.getElementById("cimier").innerHTML = meubleOpts(S.cimier);
   document.getElementById("devise").value = S.devise;
+  renderCharges();
+}
+// Liste dynamique des figures (meuble · teinture · position), un par ligne, ajout/retrait libres.
+function renderCharges(){
+  const list=document.getElementById("charges-list"); if(!list) return;
+  const meubleOpts = sel => Object.entries(MEUBLES).map(([k,o])=>opt(k,o.nom + (o.rendu===null&&k?" (figure à venir)":""),sel)).join("");
+  const tinctPlain = sel => Object.entries(TINCTURES).filter(([,o])=>o.type!=="fourrure").map(([k,o])=>opt(k,o.nom,sel)).join("");
+  const posOpts = sel => Object.entries(POSITIONS).map(([k,o])=>opt(k,o.nom,sel)).join("");
+  list.innerHTML = S.charges.map((c,i)=>`
+    <div class="charge-row" data-i="${i}">
+      <select class="ch-k">${meubleOpts(c.k)}</select>
+      <div class="row"><label>Teinture</label><select class="ch-t tinct">${tinctPlain(c.t)}</select></div>
+      <div class="row"><label>Position</label><select class="ch-p tinct">${posOpts(c.p)}</select></div>
+      ${S.charges.length>1?`<button type="button" class="ch-del">✕ retirer cette figure</button>`:""}
+    </div>`).join("");
+  list.querySelectorAll(".charge-row").forEach(row=>{
+    const i=+row.dataset.i;
+    row.querySelector(".ch-k").addEventListener("change",e=>{S.charges[i].k=e.target.value; update();});
+    row.querySelector(".ch-t").addEventListener("change",e=>{S.charges[i].t=e.target.value; update();});
+    row.querySelector(".ch-p").addEventListener("change",e=>{S.charges[i].p=e.target.value; update();});
+    const del=row.querySelector(".ch-del"); if(del) del.addEventListener("click",()=>{S.charges.splice(i,1); renderCharges(); update();});
+  });
 }
 function bind(){
   const set=(id,key)=>document.getElementById(id).addEventListener("change",e=>{S[key]=e.target.value; update();});
   set("forme","forme"); set("partition","partition"); set("tinctureA","A"); set("tinctureB","B");
   set("piece","piece"); set("pieceTinct","pieceTinct");
-  set("meuble","meuble"); set("meubleTinct","meubleTinct"); set("cimier","cimier"); set("cimierTinct","cimierTinct");
+  set("cimier","cimier"); set("cimierTinct","cimierTinct");
+  document.getElementById("add-charge").addEventListener("click",()=>{ S.charges.push({k:"",t:"or",p:"coeur"}); renderCharges(); update(); });
   document.getElementById("devise").addEventListener("input",e=>{S.devise=e.target.value; update();});
   document.getElementById("toggle-hatch").addEventListener("click",()=>{
     HATCH=!HATCH;
@@ -429,6 +467,9 @@ function composeFromAnswers(ans){
   // tincture de la garde (pièce honorable)
   if(s.piece==="champagne") s.pieceTinct="sable";
   else if(s.piece)          s.pieceTinct=_contrastT(A);
+  // conversion meuble unique → liste de figures
+  s.charges = s.meuble ? [{k:s.meuble, t:s.meubleTinct||"or", p:"coeur"}] : [];
+  delete s.meuble; delete s.meubleTinct;
   return s;
 }
 function renderIntroStep(i){
