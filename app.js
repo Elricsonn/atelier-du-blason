@@ -145,10 +145,10 @@ const POSITIONS = {
   "coeur":           { nom:"Cœur (centre)",                 x:100, y:110, s:2.4,  bl:"" },
   "chef":            { nom:"En chef (haut, centre)",        x:100, y:44,  s:1.5,  bl:"en chef" },
   "pointe":          { nom:"En pointe (bas, centre)",       x:100, y:184, s:1.4,  bl:"en pointe" },
-  "chef-dextre":     { nom:"Quartier 1 — chef dextre",      x:58,  y:56,  s:1.55, bl:"au canton dextre du chef" },
-  "chef-senestre":   { nom:"Quartier 2 — chef senestre",    x:142, y:56,  s:1.55, bl:"au canton senestre du chef" },
-  "pointe-dextre":   { nom:"Quartier 3 — pointe dextre",    x:70,  y:162, s:1.4,  bl:"au canton dextre de la pointe" },
-  "pointe-senestre": { nom:"Quartier 4 — pointe senestre",  x:130, y:162, s:1.4,  bl:"au canton senestre de la pointe" },
+  "chef-dextre":     { nom:"Quartier 1 — chef dextre",      x:56,  y:58,  s:1.05, bl:"au canton dextre du chef" },
+  "chef-senestre":   { nom:"Quartier 2 — chef senestre",    x:144, y:58,  s:1.05, bl:"au canton senestre du chef" },
+  "pointe-dextre":   { nom:"Quartier 3 — pointe dextre",    x:72,  y:158, s:0.95, bl:"au canton dextre de la pointe" },
+  "pointe-senestre": { nom:"Quartier 4 — pointe senestre",  x:128, y:158, s:0.95, bl:"au canton senestre de la pointe" },
 };
 
 // ---------- Rendu de l'écu ----------
