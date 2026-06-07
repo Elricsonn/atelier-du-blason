@@ -403,7 +403,7 @@ function composeFromAnswers(ans){
   ans.forEach(a=>{ if(a&&a.apply) Object.assign(s,a.apply); });
   const A=s.A, light=(METALS.has(A)||FOURR.has(A));
   // champ B dérivé selon la partition (A = la vertu / le champ)
-  if(s.partition==="coupe")        s.B = (A==="sable") ? "or" : "sable";        // chef / terre
+  if(s.partition==="coupe")        s.B = light ? "sable" : "argent";            // chef / terre — toujours métal+émail (règle de tincture)
   else if(s.partition==="parti")   s.B = light ? "azur" : "argent";             // deux torons
   else if(s.partition==="ecartele")s.B = light ? "gueules" : "or";
   else if(s.partition==="tranche"||s.partition==="taille") s.B = light ? "azur" : "argent";
