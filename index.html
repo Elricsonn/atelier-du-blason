@@ -54,12 +54,9 @@
     </fieldset>
 
     <fieldset>
-      <legend>3 · La pièce honorable <span class="hint">(brochant sur le champ)</span></legend>
-      <select id="piece"></select>
-      <div class="row">
-        <label>Tincture</label>
-        <select id="pieceTinct" class="tinct"></select>
-      </div>
+      <legend>3 · Les pièces honorables <span class="hint">(brochant · plusieurs possibles)</span></legend>
+      <div id="pieces-list"></div>
+      <button type="button" id="add-piece" class="add-charge">+ Ajouter une pièce</button>
     </fieldset>
 
     <fieldset>
@@ -120,8 +117,8 @@
 
 <footer>L'Atelier du Blason — mise en pratique de <em>La Voie du Blason</em>. Brouillon de travail, enrichissement en cours.</footer>
 
-<script src="meubles.js?v=5"></script>
-<script src="app.js?v=5"></script>
+<script src="meubles.js?v=6"></script>
+<script src="app.js?v=6"></script>
 <script>
 /* Seuil rituélique — sha256 du mot (minuscules), modèle Loge RER. Repli si pas de SubtleCrypto. */
 (function(){

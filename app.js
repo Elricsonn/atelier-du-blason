@@ -137,7 +137,7 @@ const PIECES = {
 // ---------- État ----------
 // État de départ : exemple GÉNÉRIQUE (aucune donnée personnelle).
 // charges : liste de figures, chacune {k: meuble, t: teinture, p: position}
-const S = { forme:"demi-amande", partition:"parti", A:"gueules", B:"argent", piece:"", pieceTinct:"or", charges:[{k:"lys",t:"or",p:"coeur"}], cimier:"etoile", cimierTinct:"argent", devise:"" };
+const S = { forme:"demi-amande", partition:"parti", A:"gueules", B:"argent", pieces:[], charges:[{k:"lys",t:"or",p:"coeur"}], cimier:"etoile", cimierTinct:"argent", devise:"" };
 
 // ---------- Positions des figures dans l'écu (coordonnées du champ + échelle + phrase de blason) ----------
 // dextre = côté du porteur = NOTRE gauche (x < 100). senestre = notre droite (x > 100).
@@ -169,11 +169,12 @@ const HATCHES = `
 <pattern id="h-sinople" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#fff"/><line x1="0" y1="0" x2="5" y2="5" stroke="#111" stroke-width="0.7"/></pattern>
 <pattern id="h-pourpre" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#fff"/><line x1="5" y1="0" x2="0" y2="5" stroke="#111" stroke-width="0.7"/></pattern>`;
 function pieceSVG(){
-  const p=PIECES[S.piece]; if(!S.piece||!p||!p.draw) return "";
-  const fill=paint(S.pieceTinct);
-  if(S.piece==="bordure")
-    return `<path d="${SHIELD[S.forme]}" fill="none" stroke="${fill}" stroke-width="20"/><path d="${SHIELD[S.forme]}" fill="none" stroke="rgba(0,0,0,.3)" stroke-width="1"/>`;
-  return `<g fill="${fill}" stroke="rgba(0,0,0,.35)" stroke-width="1">${p.draw}</g>`;
+  return S.pieces.filter(p=>p.k && PIECES[p.k] && PIECES[p.k].draw).map(p=>{
+    const fill=paint(p.t);
+    if(p.k==="bordure")
+      return `<path d="${SHIELD[S.forme]}" fill="none" stroke="${fill}" stroke-width="20"/><path d="${SHIELD[S.forme]}" fill="none" stroke="rgba(0,0,0,.3)" stroke-width="1"/>`;
+    return `<g fill="${fill}" stroke="rgba(0,0,0,.35)" stroke-width="1">${PIECES[p.k].draw}</g>`;
+  }).join("");
 }
 function fieldRegions(){
   const A=paint(S.A), B=paint(S.B);
@@ -243,7 +244,7 @@ function blason(){
   else if(S.partition==="gironne") champ=`Gironné ${de(t(S.A))} et ${de(t(S.B))}`;
   else champ=`Taillé ${de(t(S.A))} et ${de(t(S.B))}`;
   let parts=[champ];
-  if(S.piece) parts.push(`${PIECES[S.piece].bl} ${de(t(S.pieceTinct))}`);
+  S.pieces.filter(p=>p.k).forEach(p=>parts.push(`${PIECES[p.k].bl} ${de(t(p.t))}`));
   const chs = S.charges.filter(c=>c.k);
   if(chs.length){
     const liste = chs.map(c=>{ const P=POSITIONS[c.p]; return `${art(c.k)} ${MEUBLES[c.k].nom.toLowerCase()} ${de(t(c.t))}${P&&P.bl?` ${P.bl}`:""}`; }).join(" et ");
@@ -264,7 +265,7 @@ function senses(){
   h+=item("Champ — "+PARTITIONS[S.partition].nom, PARTITIONS[S.partition]);
   h+=item("Émail A — "+T(S.A).nom, T(S.A));
   if(PARTITIONS[S.partition].regions>1) h+=item("Émail B — "+T(S.B).nom, T(S.B));
-  if(S.piece){ h+=item("Pièce — "+PIECES[S.piece].nom, PIECES[S.piece]); h+=item("↳ "+T(S.pieceTinct).nom, T(S.pieceTinct), "sub"); }
+  S.pieces.filter(p=>p.k).forEach(p=>{ h+=item("Pièce — "+PIECES[p.k].nom, PIECES[p.k]); h+=item("↳ "+T(p.t).nom, T(p.t), "sub"); });
   S.charges.filter(c=>c.k).forEach(c=>{ const pos=POSITIONS[c.p]&&POSITIONS[c.p].bl; h+=item("Meuble — "+MEUBLES[c.k].nom+(pos?` (${pos})`:""), MEUBLES[c.k]); h+=item("↳ "+T(c.t).nom, T(c.t), "sub"); });
   if(S.cimier){ h+=item("Cimier — "+MEUBLES[S.cimier].nom, MEUBLES[S.cimier]); h+=item("↳ "+T(S.cimierTinct).nom, T(S.cimierTinct), "sub"); }
   return h;
@@ -283,12 +284,12 @@ function tinctureWarn(){
     const fonds = P.regions>1 ? [TINCTURES[S.A].type, TINCTURES[S.B].type] : [TINCTURES[S.A].type];
     if(mt!=="amphibie" && mt!=="fourrure" && fonds.every(f=>f===mt && f!=="amphibie" && f!=="fourrure")) w.push(`La figure ${MEUBLES[c.k].nom} (${TINCTURES[c.t].nom}) est de même nature que son fond — ${mt==="métal"?"métal sur métal":"émail sur émail"}. (Sur une partition métal+couleur, une figure brochant peut être tolérée, ou « de l'un en l'autre ».)`);
   });
-  // pièce honorable vs champ
-  if(S.piece){
-    const pt=TINCTURES[S.pieceTinct].type;
+  // pièces honorables vs champ
+  S.pieces.filter(p=>p.k).forEach(p=>{
+    const pt=TINCTURES[p.t].type;
     const fonds = P.regions>1 ? [TINCTURES[S.A].type, TINCTURES[S.B].type] : [TINCTURES[S.A].type];
-    if(pt!=="amphibie" && pt!=="fourrure" && fonds.every(f=>f===pt && f!=="amphibie" && f!=="fourrure")) w.push(`La pièce honorable (${TINCTURES[S.pieceTinct].nom}) est de même nature que le champ — ${pt==="métal"?"métal sur métal":"émail sur émail"}.`);
-  }
+    if(pt!=="amphibie" && pt!=="fourrure" && fonds.every(f=>f===pt && f!=="amphibie" && f!=="fourrure")) w.push(`La pièce ${PIECES[p.k].nom} (${TINCTURES[p.t].nom}) est de même nature que le champ — ${pt==="métal"?"métal sur métal":"émail sur émail"}.`);
+  });
   const el=document.getElementById("tincture-warning");
   if(w.length){ el.hidden=false; el.innerHTML="⚠︎ "+w.join("<br>⚠︎ "); } else el.hidden=true;
 }
@@ -302,13 +303,29 @@ function fillSelects(){
   const tinctOptsPlain = sel => Object.entries(TINCTURES).filter(([,o])=>o.type!=="fourrure").map(([k,o])=>opt(k,o.nom,sel)).join("");
   document.getElementById("tinctureA").innerHTML = tinctOpts(S.A);
   document.getElementById("tinctureB").innerHTML = tinctOpts(S.B);
-  document.getElementById("piece").innerHTML = Object.entries(PIECES).map(([k,o])=>opt(k,o.nom,S.piece)).join("");
-  document.getElementById("pieceTinct").innerHTML = tinctOpts(S.pieceTinct);
   document.getElementById("cimierTinct").innerHTML = tinctOptsPlain(S.cimierTinct);
   const meubleOpts = sel => Object.entries(MEUBLES).map(([k,o])=>opt(k,o.nom + (o.rendu===null&&k?" (figure à venir)":""),sel)).join("");
   document.getElementById("cimier").innerHTML = meubleOpts(S.cimier);
   document.getElementById("devise").value = S.devise;
-  renderCharges();
+  renderPieces(); renderCharges();
+}
+// Liste dynamique des pièces honorables (pièce · teinture), un par ligne.
+function renderPieces(){
+  const list=document.getElementById("pieces-list"); if(!list) return;
+  const pieceOpts = sel => Object.entries(PIECES).map(([k,o])=>opt(k,o.nom,sel)).join("");
+  const tinctAll = sel => Object.entries(TINCTURES).map(([k,o])=>opt(k,o.nom,sel)).join("");
+  list.innerHTML = S.pieces.map((p,i)=>`
+    <div class="charge-row" data-i="${i}">
+      <select class="pc-k">${pieceOpts(p.k)}</select>
+      <div class="row"><label>Teinture</label><select class="pc-t tinct">${tinctAll(p.t)}</select></div>
+      <button type="button" class="ch-del">✕ retirer cette pièce</button>
+    </div>`).join("");
+  list.querySelectorAll(".charge-row").forEach(row=>{
+    const i=+row.dataset.i;
+    row.querySelector(".pc-k").addEventListener("change",e=>{S.pieces[i].k=e.target.value; update();});
+    row.querySelector(".pc-t").addEventListener("change",e=>{S.pieces[i].t=e.target.value; update();});
+    row.querySelector(".ch-del").addEventListener("click",()=>{S.pieces.splice(i,1); renderPieces(); update();});
+  });
 }
 // Liste dynamique des figures (meuble · teinture · position), un par ligne, ajout/retrait libres.
 function renderCharges(){
@@ -334,8 +351,8 @@ function renderCharges(){
 function bind(){
   const set=(id,key)=>document.getElementById(id).addEventListener("change",e=>{S[key]=e.target.value; update();});
   set("forme","forme"); set("partition","partition"); set("tinctureA","A"); set("tinctureB","B");
-  set("piece","piece"); set("pieceTinct","pieceTinct");
   set("cimier","cimier"); set("cimierTinct","cimierTinct");
+  document.getElementById("add-piece").addEventListener("click",()=>{ S.pieces.push({k:"",t:"or"}); renderPieces(); update(); });
   document.getElementById("add-charge").addEventListener("click",()=>{ S.charges.push({k:"",t:"or",p:"coeur"}); renderCharges(); update(); });
   document.getElementById("devise").addEventListener("input",e=>{S.devise=e.target.value; update();});
   document.getElementById("toggle-hatch").addEventListener("click",()=>{
@@ -355,7 +372,7 @@ function bind(){
   });
   document.getElementById("reset-ecu").addEventListener("click",()=>{
     if(!confirm("Réinitialiser l'écu ? La composition en cours sera effacée (écu vierge : la table d'attente).")) return;
-    Object.assign(S, { forme:"demi-amande", partition:"plein", A:"argent", B:"argent", piece:"", pieceTinct:"or", charges:[], cimier:"", cimierTinct:"or", devise:"" });
+    Object.assign(S, { forme:"demi-amande", partition:"plein", A:"argent", B:"argent", pieces:[], charges:[], cimier:"", cimierTinct:"or", devise:"" });
     fillSelects(); update();
   });
 }
@@ -472,9 +489,10 @@ function composeFromAnswers(ans){
   // tincture de la garde (pièce honorable)
   if(s.piece==="champagne") s.pieceTinct="sable";
   else if(s.piece)          s.pieceTinct=_contrastT(A);
-  // conversion meuble unique → liste de figures
+  // conversion meuble/pièce uniques → listes
+  s.pieces = s.piece ? [{k:s.piece, t:s.pieceTinct}] : [];
   s.charges = s.meuble ? [{k:s.meuble, t:s.meubleTinct||"or", p:"coeur"}] : [];
-  delete s.meuble; delete s.meubleTinct;
+  delete s.piece; delete s.pieceTinct; delete s.meuble; delete s.meubleTinct;
   return s;
 }
 function renderIntroStep(i){
