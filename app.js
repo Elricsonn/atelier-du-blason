@@ -307,50 +307,111 @@ function update(){
 }
 fillSelects(); bind(); update();
 
-// ---------- Mode introspection (guidé : 4 questions → un écu suggéré) ----------
-const INTRO = [
-  { q:"Vers quoi ton âme tend-elle ?", sub:"Ce qui te couronne et te guide.",
-    options:[
-      {label:"La Lumière, la vérité", hint:"Sol Justitiæ — un soleil d'or", cimier:"soleil", cimierTinct:"or",
-       why:"la <b>Lumière et la vérité</b> — un <b>soleil d'or</b> te couronne (le <i>Sol Justitiæ</i>, Cœur du Christ-Roi)."},
-      {label:"Un guide dans la nuit", hint:"Stella Maris — une étoile d'argent", cimier:"etoile", cimierTinct:"argent",
-       why:"un <b>guide dans la nuit</b> — une <b>étoile d'argent</b> te couronne (la <i>Stella Maris</i>, l'Étoile du Berger)."},
-      {label:"La paix, le silence intérieur", hint:"Miroir de Justice — une lune d'argent", cimier:"lune", cimierTinct:"argent",
-       why:"la <b>paix et le silence</b> — une <b>lune d'argent</b> te couronne (le Miroir de Justice)."},
-      {label:"L'amour qui s'offre", hint:"« en odeur de sainteté » — une rose d'or", cimier:"rose", cimierTinct:"or",
-       why:"l'<b>amour qui s'offre</b> — une <b>rose d'or</b> te couronne (« en odeur de sainteté »)."},
-    ]},
-  { q:"Quelle vertu te tient debout ?", sub:"Elle donnera sa couleur à ton champ.",
-    options:[
-      {label:"La Foi", hint:"l'or", email:"or", why:"La <b>Foi</b> te tient debout : elle donne à ton champ l'<b>or</b>, perfection et lumière."},
-      {label:"L'Espérance", hint:"le sinople", email:"sinople", why:"L'<b>Espérance</b> te tient debout : elle donne à ton champ le <b>sinople</b>, vert de la jeunesse de l'âme."},
-      {label:"La Charité", hint:"le gueules", email:"gueules", why:"La <b>Charité</b> te tient debout : elle donne à ton champ le <b>gueules</b>, rouge de l'amour ardent."},
-      {label:"L'humilité, le renoncement", hint:"le sable", email:"sable", why:"L'<b>humilité</b> te tient debout : elle donne à ton champ le <b>sable</b>, l'humus où germent les vertus."},
-    ]},
-  { q:"Quelle est ta place parmi les autres ?", sub:"Ta vocation prendra une figure.",
-    options:[
-      {label:"Veiller, garder", hint:"la tour", meuble:"tour", why:"Ta place est de <b>veiller et garder</b> : ta figure est la <b>tour</b>, ascension et garde inexpugnable de l'être."},
-      {label:"Relier, réconcilier", hint:"le pont", meuble:"pont", why:"Ta place est de <b>relier</b> : ta figure est le <b>pont</b>, qui joint les deux rives, le Ciel et la terre."},
-      {label:"Éclairer, éveiller", hint:"la lampe", meuble:"lampe", why:"Ta place est d'<b>éclairer</b> : ta figure est la <b>lampe</b>, celle des Vierges sages tenue allumée dans la nuit."},
-      {label:"Protéger, combattre pour les faibles", hint:"le lion", meuble:"lion", why:"Ta place est de <b>protéger</b> : ta figure est le <b>lion</b>, le <i>Miles Christi</i>, courage au service des faibles."},
-    ]},
-  { q:"Comment te tiens-tu ?", sub:"La structure de ton écu.",
-    options:[
-      {label:"D'un seul tenant, unifié", hint:"plein", partition:"plein", why:"Tu te tiens <b>d'un seul tenant</b> : ton champ est <b>plein</b>, l'unité et la simplicité de l'être."},
-      {label:"Tendu entre le Ciel et la terre", hint:"coupé", partition:"coupe", why:"Tu te tiens <b>tendu entre le Ciel et la terre</b> : ton champ est <b>coupé</b> — l'or du Ciel en chef, le sable de la terre en pointe — et ta vertu colore la figure qui broche entre les deux."},
-      {label:"Entre deux forces à unir", hint:"parti", partition:"parti", why:"Tu te tiens <b>entre deux forces à unir</b> : ton champ est <b>parti</b>, et la ligne qui les joint est l'Agapè, la Charité."},
-    ]},
-];
+// ---------- Mode introspection v2 (examen de conscience héraldique, 7 temps) ----------
+// Fondé sur la synthèse intégrale de Gambirasio (cf. 03.05.05.03/04 - Synthèse…).
+// Chaque option porte un `apply` (état partiel) + `why` (lecture) ; la dernière question
+// porte aussi une `ombre` (le sens déchu à veiller). Le champ B et la tincture de la garde
+// sont dérivés dans composeFromAnswers.
 const METALS = new Set(["or","argent"]);
-let introAns = [null,null,null,null];
+const FOURR  = new Set(["hermine","vair"]);
+const INTRO = [
+  { q:"Que suis-je devant Dieu ?", sub:"La forme même de ton âme (la table d'attente).", options:[
+    {label:"Un chevalier en marche vers la Cité", hint:"demi-amande — la mandorle, le Graal", apply:{forme:"demi-amande"},
+     why:"Tu es un <b>chevalier en marche</b> : la <b>demi-amande</b>, mandorle du Christ et de la Vierge, portail ouvert sur le Ciel, Cœur et Graal."},
+    {label:"Un être accompli, rendu à sa seigneurie", hint:"bannière — Jérusalem céleste", apply:{forme:"banniere"},
+     why:"Tu te tiens <b>accompli</b> : l'écu en <b>bannière</b>, stabilité et perfection, la Jérusalem céleste."},
+    {label:"Une âme féconde, qui s'enfante sous l'Esprit", hint:"ovale — parturition", apply:{forme:"ovale"},
+     why:"Tu es <b>âme féconde</b> : l'écu <b>ovale</b>, fécondité et parturition spirituelle."},
+    {label:"Un élan fragile, une vie offerte", hint:"losange — le fuseau", apply:{forme:"losange"},
+     why:"Tu es <b>élan offert</b> : le <b>losange</b>, fragilité et élan de la vie."},
+  ]},
+  { q:"Vers quelle Lumière mon âme tend-elle ?", sub:"Ce qui te couronne et te guide (le rapport à la Source).", options:[
+    {label:"La Lumière incréée, le Christ-Roi", hint:"soleil d'or", apply:{cimier:"soleil",cimierTinct:"or"},
+     why:"Tu tends vers la <b>Lumière incréée</b> — un <b>soleil d'or</b> te couronne (<i>Sol Justitiæ</i>, christophore)."},
+    {label:"Un guide dans la nuit (l'Étoile du Matin)", hint:"étoile d'or", apply:{cimier:"etoile",cimierTinct:"or"},
+     why:"Tu tends vers <b>un guide dans la nuit</b> — l'<b>Étoile du Matin, d'or</b> (étoile du Berger, <i>Stella Maris</i>, promise au vainqueur)."},
+    {label:"La paix, le miroir (Notre-Dame)", hint:"lune d'argent", apply:{cimier:"lune",cimierTinct:"argent"},
+     why:"Tu tends vers <b>la paix, le miroir</b> — une <b>lune d'argent</b> (Miroir de Justice)."},
+    {label:"L'amour en odeur de sainteté", hint:"rose d'or", apply:{cimier:"rose",cimierTinct:"or"},
+     why:"Tu tends vers <b>l'amour</b> — une <b>rose d'or</b> (Amour spirituel & Connaissance)."},
+    {label:"La royauté du cœur offert", hint:"lys d'or", apply:{cimier:"lys",cimierTinct:"or"},
+     why:"Tu tends vers <b>la royauté du cœur offert</b> — un <b>lys d'or</b> (Foi + Sapience + Prouesse → la Paix)."},
+    {label:"Le don de soi, la Croix", hint:"croix d'or", apply:{cimier:"croix",cimierTinct:"or"},
+     why:"Tu tends vers <b>le don de soi</b> — une <b>croix d'or</b> (le Verbe, le Signe au-dessus de tout signe)."},
+  ]},
+  { q:"Quelle vertu me colore ?", sub:"Elle teinte le champ de ton être.", options:[
+    {label:"La Foi, la perfection", hint:"or", apply:{A:"or"}, why:"La <b>Foi</b> te colore : ton champ d'<b>or</b>, perfection et Lumière (Œuvre au Rouge)."},
+    {label:"L'Espérance, la jeunesse de l'âme", hint:"sinople", apply:{A:"sinople"}, why:"L'<b>Espérance</b> te colore : <b>sinople</b>, vert de la jeunesse de l'âme."},
+    {label:"La Charité ardente, la Force", hint:"gueules", apply:{A:"gueules"}, why:"La <b>Charité & la Force</b> te colorent : <b>gueules</b>, l'amour ardent, la lampe, le sang."},
+    {label:"L'élévation par l'Esprit", hint:"azur", apply:{A:"azur"}, why:"L'<b>élévation par l'Esprit</b> te colore : <b>azur</b>, couleur de la Vierge."},
+    {label:"La royauté, la transmutation", hint:"pourpre", apply:{A:"pourpre"}, why:"La <b>royauté/transmutation</b> te colore : <b>pourpre</b>, déification de l'être."},
+    {label:"L'humilité, le renoncement", hint:"sable", apply:{A:"sable"}, why:"L'<b>humilité</b> te colore : <b>sable</b>, l'humus des vertus (Œuvre au Noir)."},
+    {label:"La pureté, la réceptivité mariale", hint:"argent", apply:{A:"argent"}, why:"La <b>pureté réceptive</b> te colore : <b>argent</b>, état marial (Œuvre au Blanc)."},
+    {label:"La pureté gardée jusqu'à la mort", hint:"hermine (fourrure)", apply:{A:"hermine"}, why:"Ta pureté est <b>gardée jusqu'à la mort</b> : l'<b>hermine</b> — « plutôt mourir que se souiller »."},
+    {label:"La pureté du cœur ET l'élévation", hint:"vair (fourrure)", apply:{A:"vair"}, why:"Pureté <b>et</b> élévation conjuguées : le <b>vair</b> (argent + azur, le petit-gris)."},
+  ]},
+  { q:"Quelle est ma vocation parmi les hommes ?", sub:"Elle prend une figure au cœur de l'écu.", options:[
+    {label:"Veiller et garder", hint:"la tour", apply:{meuble:"tour"}, why:"Ta vocation : <b>veiller et garder</b> — la <b>tour</b> (ascension + garde, tour d'ivoire, four ardent)."},
+    {label:"Relier deux mondes (du moi au soi)", hint:"le pont", apply:{meuble:"pont"}, why:"Ta vocation : <b>relier</b> — le <b>pont</b>, du moi au soi, franchi par la prouesse, soutenu par la Foi."},
+    {label:"Éclairer, tenir la lampe dans la nuit", hint:"la lampe", apply:{meuble:"lampe"}, why:"Ta vocation : <b>éclairer</b> — la <b>lampe</b> des vierges sages, tenue dans la nuit."},
+    {label:"Combattre pour la Foi et les faibles", hint:"le lion", apply:{meuble:"lion"}, why:"Ta vocation : <b>combattre pour les faibles</b> — le <b>lion</b>, Miles Christi, Lion de Juda."},
+    {label:"Garder le seuil, discerner", hint:"le léopard", apply:{meuble:"leopard"}, why:"Ta vocation : <b>garder le seuil</b> — le <b>léopard</b> (leo-pardès), vigilance, passeur d'âmes."},
+    {label:"Monter vers l'Esprit, fixer le Soleil", hint:"l'aigle", apply:{meuble:"aigle"}, why:"Ta vocation : <b>monter vers l'Esprit</b> — l'<b>aigle</b>, l'âme volatile qui regarde le Soleil."},
+    {label:"Régner sur soi, le cœur offert", hint:"le lys", apply:{meuble:"lys"}, why:"Ta vocation : la <b>royauté du dedans</b> — le <b>lys</b> (Foi + Sapience + Prouesse)."},
+    {label:"Aimer et connaître", hint:"la rose", apply:{meuble:"rose"}, why:"Ta vocation : <b>aimer et connaître</b> — la <b>rose</b> (5 Plaies, « en odeur de sainteté »)."},
+    {label:"Tenir l'Espérance dans la tempête", hint:"l'ancre", apply:{meuble:"ancre"}, why:"Ta vocation : <b>tenir l'Espérance</b> — l'<b>ancre</b> de l'âme (He 6,19)."},
+    {label:"Porter la Croix", hint:"la croix", apply:{meuble:"croix"}, why:"Ta vocation : <b>porter la Croix</b> — l'axe du don de soi, le Verbe."},
+  ]},
+  { q:"De quelle lumière brille ta figure ?", sub:"« Tour d'or n'est pas tour de gueules » — l'émail change le sens.", options:[
+    {label:"D'or — Foi, Lumière incréée", hint:"or", apply:{meubleTinct:"or"}, why:"Ta figure est <b>d'or</b> : Foi et Lumière incréée."},
+    {label:"De gueules — Force & Charité ardentes", hint:"gueules", apply:{meubleTinct:"gueules"}, why:"Ta figure est <b>de gueules</b> : Force et Charité, le feu ardent de l'Esprit."},
+    {label:"D'argent — pureté mariale", hint:"argent", apply:{meubleTinct:"argent"}, why:"Ta figure est <b>d'argent</b> : pureté, état marial (l'albedo)."},
+    {label:"D'azur — élévation par l'Esprit", hint:"azur", apply:{meubleTinct:"azur"}, why:"Ta figure est <b>d'azur</b> : élévation par l'Esprit."},
+    {label:"De sable — enracinée dans la nuit", hint:"sable", apply:{meubleTinct:"sable"}, why:"Ta figure est <b>de sable</b> : enracinée dans l'humilité, la nuit d'où l'on monte."},
+    {label:"De sinople — Espérance vivante", hint:"sinople", apply:{meubleTinct:"sinople"}, why:"Ta figure est <b>de sinople</b> : l'Espérance, la jeunesse de l'âme."},
+  ]},
+  { q:"Comment suis-je ordonné ?", sub:"La structure profonde de ton être.", options:[
+    {label:"D'un seul tenant — l'unité de l'être", hint:"plein", apply:{partition:"plein"}, why:"Tu es <b>un</b> : champ <b>plein</b>, l'unité et la simplicité de l'être (le « vide plein »)."},
+    {label:"Tendu entre le Ciel et la terre", hint:"coupé", apply:{partition:"coupe"}, why:"Tu es <b>tendu entre Ciel et terre</b> : le <b>coupé</b>, hiérogamie qui « enfante l'être dans l'Esprit »."},
+    {label:"Deux forces à unir par l'Amour", hint:"parti", apply:{partition:"parti"}, why:"Tu unis <b>deux forces</b> : le <b>parti</b>, dont la ligne est l'<b>Agapè</b>."},
+    {label:"La Croix aux quatre directions", hint:"écartelé", apply:{partition:"ecartele"}, why:"La <b>Croix</b> te structure : l'<b>écartelé</b>, fermeté dans la Foi, la Parole aux quatre directions."},
+    {label:"L'élan, l'éclair vers la lumière", hint:"tranché", apply:{partition:"tranche"}, why:"Tu es <b>élan</b> : le <b>tranché</b>, l'éclair qui fuse de l'angle dextre (l'écharpe du Miles Christi)."},
+  ]},
+  { q:"Que dois-je garder — et contre quelle ombre veiller ?", sub:"La garde du cœur, et la passion qui te guette.", options:[
+    {label:"La veille des vierges sages", hint:"bordure — contre la tiédeur", apply:{piece:"bordure"},
+     why:"Tu gardes ton cœur par la <b>veille</b> : une <b>bordure</b>, l'enceinte qui veille comme les vierges sages.",
+     ombre:"la <b>tiédeur, l'endormissement</b> — « parce que tu es tiède, je vais te vomir » (Apoc 3,16)."},
+    {label:"L'humilité qui porte tout", hint:"champagne — contre l'orgueil", apply:{piece:"champagne"},
+     why:"Tu gardes ton cœur par l'<b>humilité</b> : une <b>champagne</b>, le socle, l'humus des vertus.",
+     ombre:"l'<b>orgueil</b> — l'astre infernal, le chef changé en chape de plomb."},
+    {label:"La rectitude, l'axe vers le Ciel", hint:"pal — contre la dispersion", apply:{piece:"pal"},
+     why:"Tu gardes ton cœur par la <b>rectitude</b> : un <b>pal</b>, l'axe pointe→cœur→chef (la lance).",
+     ombre:"la <b>dispersion</b> — le royaume divisé contre lui-même (Caïn)."},
+    {label:"Le Verbe, l'épée", hint:"croix — contre le mensonge", apply:{piece:"croix"},
+     why:"Tu gardes ton cœur par le <b>Verbe</b> : une <b>croix</b>, l'épée qui disperse le Malin.",
+     ombre:"le <b>mensonge, le faux prophète</b> — l'étoile renversée, pointe en bas."},
+    {label:"Aucune garde — l'écu nu (le dépouillement)", hint:"rien ajouté", apply:{piece:""},
+     why:"Tu choisis l'<b>écu nu</b> : la sobriété du « vide plein », sans rempart ajouté.", ombre:""},
+  ]},
+];
+let introAns = Array(INTRO.length).fill(null);
 
-function composeFromAnswers(a){
-  const virtue=a[1].email, partition=a[3].partition;
-  let A,B,meubleTinct;
-  if(partition==="plein"){ A=virtue; B=virtue; meubleTinct = METALS.has(A)?"gueules":"or"; }
-  else if(partition==="coupe"){ A="or"; B="sable"; meubleTinct = (virtue==="or"||virtue==="sable")?"argent":virtue; }
-  else { A=virtue; B=METALS.has(virtue)?"azur":"argent"; meubleTinct = (A!=="or"&&B!=="or")?"or":"argent"; }
-  return { forme:"demi-amande", partition, A, B, meuble:a[2].meuble, meubleTinct, cimier:a[0].cimier, cimierTinct:a[0].cimierTinct, devise:"" };
+function _contrastT(a){ return (METALS.has(a)||FOURR.has(a)) ? "gueules" : "or"; }  // garde lisible sur le champ
+function composeFromAnswers(ans){
+  const s = { forme:"demi-amande", partition:"plein", A:"argent", B:"argent",
+              piece:"", pieceTinct:"or", meuble:"", meubleTinct:"or", cimier:"", cimierTinct:"or", devise:"" };
+  ans.forEach(a=>{ if(a&&a.apply) Object.assign(s,a.apply); });
+  const A=s.A, light=(METALS.has(A)||FOURR.has(A));
+  // champ B dérivé selon la partition (A = la vertu / le champ)
+  if(s.partition==="coupe")        s.B = (A==="sable") ? "or" : "sable";        // chef / terre
+  else if(s.partition==="parti")   s.B = light ? "azur" : "argent";             // deux torons
+  else if(s.partition==="ecartele")s.B = light ? "gueules" : "or";
+  else if(s.partition==="tranche"||s.partition==="taille") s.B = light ? "azur" : "argent";
+  else                             s.B = A;
+  // tincture de la garde (pièce honorable)
+  if(s.piece==="champagne") s.pieceTinct="sable";
+  else if(s.piece)          s.pieceTinct=_contrastT(A);
+  return s;
 }
 function renderIntroStep(i){
   const Q=INTRO[i];
@@ -359,7 +420,7 @@ function renderIntroStep(i){
   const opts=Q.options.map((o,oi)=>
     `<button class="intro-opt" type="button" data-oi="${oi}"><span class="opt-l">${o.label}</span><span class="opt-h">${o.hint}</span></button>`).join("");
   document.getElementById("intro-body").innerHTML =
-    `<p class="intro-step">Question ${i+1} / 4</p><h2 class="intro-h">${Q.q}</h2><p class="intro-sub">${Q.sub}</p><div class="intro-opts">${opts}</div>`;
+    `<p class="intro-step">Question ${i+1} / ${INTRO.length}</p><h2 class="intro-h">${Q.q}</h2><p class="intro-sub">${Q.sub}</p><div class="intro-opts">${opts}</div>`;
   document.querySelectorAll(".intro-opt").forEach(b=>b.addEventListener("click",()=>{
     introAns[i]=Q.options[+b.dataset.oi];
     if(i<INTRO.length-1) renderIntroStep(i+1); else showIntroResult();
@@ -368,20 +429,23 @@ function renderIntroStep(i){
 function showIntroResult(){
   Object.assign(S, composeFromAnswers(introAns)); fillSelects(); update();
   const ecu=document.getElementById("ecu").innerHTML;
+  const ombre = introAns[INTRO.length-1] && introAns[INTRO.length-1].ombre;
   document.getElementById("intro-dots").innerHTML="";
   document.getElementById("intro-body").innerHTML =
-    `<h2 class="intro-h">Voici tes armes</h2>
+    `<div class="intro-orn">✦</div>
+     <h2 class="intro-h">Voici tes armes</h2>
      <div class="intro-ecu">${ecu}</div>
      <p class="intro-bl">${blason()}</p>
-     <div class="intro-why">${introAns.map(a=>`<p>✦ ${a.why}</p>`).join("")}</div>
+     <div class="intro-why">${introAns.map(a=>`<p>✦ ${a.why}</p>`).join("")}${ombre?`<p class="intro-ombre">⟂ <b>Ton ombre à veiller :</b> ${ombre}</p>`:""}</div>
+     <p class="intro-depouille">« Édifier, c'est <b>dépouiller</b>. » Regarde ton écu : qu'est-ce qui n'est pas ton <b>point cardiaque</b> ? Entre dans l'atelier et retranche jusqu'à l'essentiel — le « vide plein ».</p>
      <div class="intro-actions">
        <button id="intro-enter" type="button">Entrer dans l'atelier</button>
        <button id="intro-again" type="button" class="ghost">Recommencer</button>
      </div>`;
   document.getElementById("intro-enter").addEventListener("click", closeIntro);
-  document.getElementById("intro-again").addEventListener("click", ()=>{ introAns=[null,null,null,null]; renderIntroStep(0); });
+  document.getElementById("intro-again").addEventListener("click", ()=>{ introAns=Array(INTRO.length).fill(null); renderIntroStep(0); });
 }
-function openIntro(){ introAns=[null,null,null,null]; document.getElementById("intro").hidden=false; renderIntroStep(0); }
+function openIntro(){ introAns=Array(INTRO.length).fill(null); document.getElementById("intro").hidden=false; renderIntroStep(0); }
 function closeIntro(){ document.getElementById("intro").hidden=true; }
 document.getElementById("open-intro").addEventListener("click", openIntro);
 document.getElementById("intro-close").addEventListener("click", closeIntro);

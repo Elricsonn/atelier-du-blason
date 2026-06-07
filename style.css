@@ -178,3 +178,10 @@ button:hover{ color:#1a1200; background:var(--gold); border-color:var(--gold); }
 /* sous-ligne : tincture d'un meuble/cimier/pièce */
 #senses .item.sub{ margin-left:1rem; border-left:1px solid rgba(212,168,75,.2); padding-left:.65rem; }
 #senses .item.sub b{ font-size:.86rem; color:var(--gold-deep); }
+
+/* introspection v2 : ombre à veiller + dépouillement */
+.intro-ombre{ color:#d98a3a !important; font-style:italic; margin-top:.6rem !important;
+  border-top:1px solid rgba(217,138,58,.25); padding-top:.5rem; }
+.intro-depouille{ color:var(--ink); font-size:.9rem; font-style:italic; line-height:1.5;
+  margin:1rem auto; max-width:46ch; padding:.7rem .9rem;
+  background:rgba(212,168,75,.06); border-left:3px solid var(--gold); border-radius:0 6px 6px 0; }
