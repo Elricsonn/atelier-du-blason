@@ -129,7 +129,7 @@ const PIECES = {
   "pile":    { nom:"Pile", bl:"à la pile", page:102,
                lum:"Le long triangle descendant du chef : la langue de feu pentecôtique, la comète (étoile du Berger) qui ensemence l'âme de Lumière ; l'Espérance.", dechu:"la chute qui s'accélère, le précipice sans fond.",
                draw:'<polygon points="67,0 133,0 100,230"/>' },
-  "ecusson": { nom:"Écusson (sur-le-tout)", bl:"à l'écusson", page:96,
+  "ecusson": { nom:"Écusson — le cœur (sur-le-tout)", bl:"à l'écusson", page:96,
                lum:"Le petit écu posé au cœur même de l'écu : le centre, le tabernacle, la « fine pointe de l'âme » ; le grain de sénevé dont la condition est l'humilité — la cible où l'on touche le cœur de Dieu.", dechu:"le cœur gonflé d'orgueil, pétrifié ; la fracture qui déséquilibre l'être.",
                draw:'<path d="M72,72 L128,72 L128,104 Q128,128 100,140 Q72,128 72,104 Z"/>' },
 };
