@@ -353,6 +353,11 @@ function bind(){
     const txt = blason()+"\n\nLecture spirituelle :\n"+document.getElementById("senses").innerText;
     navigator.clipboard.writeText(txt).then(()=>{ const b=document.getElementById("copy-txt"); const o=b.textContent; b.textContent="✓ Copié"; setTimeout(()=>b.textContent=o,1400); });
   });
+  document.getElementById("reset-ecu").addEventListener("click",()=>{
+    if(!confirm("Réinitialiser l'écu ? La composition en cours sera effacée (écu vierge : la table d'attente).")) return;
+    Object.assign(S, { forme:"demi-amande", partition:"plein", A:"argent", B:"argent", piece:"", pieceTinct:"or", charges:[], cimier:"", cimierTinct:"or", devise:"" });
+    fillSelects(); update();
+  });
 }
 function update(){
   const multi = PARTITIONS[S.partition].regions>1;
