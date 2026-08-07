@@ -1,0 +1,64 @@
+/* ── JETONS ─────────────────────────────────────────────────────
+   Valeurs relevées dans loge-rer et tableemeraude, qui étaient
+   déjà d'accord au jeton près. Rien n'est inventé ici.
+   ─────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Or */
+  --or-clair:    #f0d060;  /* survols, reflets, liserés */
+  --or:          #d4a84b;  /* accent : titres, liens, bordures vives */
+  --or-moyen:    #c49a35;  /* liens secondaires, étiquettes */
+  --or-fonce:    #8b6914;  /* BORDURES UNIQUEMENT — 3,9:1, illisible en petit texte */
+  --or-profond:  #5a3a10;
+  --or-ombre:    #3a2a0a;  /* filets discrets sur fond nuit */
+
+  /* Fonds */
+  --fond:            #0f0b08;  /* body — brun-nuit, réchauffe l'or */
+  --fond-panneau:    #1a1200;  /* cartes, champs, boutons */
+  --fond-survol:     #221800;
+  --fond-voile:      rgba(15, 11, 8, 0.95);  /* en-tête collant */
+
+  /* Texte */
+  --texte:       #e8dcc8;  /* corps — 12,4:1 */
+  --texte-doux:  #a09880;  /* chapôs, légendes — 6,9:1 */
+  --texte-meta:  #a88b45;  /* dates, étiquettes dorées — 5,9:1 */
+
+  /* Sémantique */
+  --vert:  #4a9f5f;
+  --ambre: #d48a2b;
+  --rouge: #cc4444;
+
+  /* Typographie */
+  --font-titre: 'Cinzel', Georgia, serif;
+  --font-orne:  'Cinzel Decorative', Georgia, serif;
+  --font-corps: 'Crimson Text', Georgia, serif;
+
+  --corps:      18px;
+  --interligne: 1.75;
+
+  /* Rythme */
+  --sp-1: 4px;   --sp-2: 8px;   --sp-3: 12px;  --sp-4: 16px;
+  --sp-5: 24px;  --sp-6: 32px;  --sp-7: 48px;  --sp-8: 72px;
+
+  /* Géométrie */
+  --r-sm: 3px;  --r-md: 4px;  --r-lg: 6px;
+  --largeur-texte:  860px;   /* colonne de lecture */
+  --largeur-large: 1100px;   /* grilles, en-tête */
+
+  /* Bordures et voiles dorés — remplacent les rgba(212,168,75,.xx)
+     éparpillés. Quatre niveaux suffisent : c'est ce qu'on trouvait
+     en relevant les usages réels. */
+  --bord-doux: rgba(212, 168, 75, 0.16);  /* séparations internes */
+  --bord:      rgba(212, 168, 75, 0.28);  /* cadres de panneaux, champs */
+  --bord-vif:  rgba(212, 168, 75, 0.45);  /* boutons, survols */
+  --voile-or:  rgba(212, 168, 75, 0.06);  /* aplats très légers */
+  --voile-or-fort: rgba(212, 168, 75, 0.12);  /* le même au survol */
+
+  /* Lueurs */
+  --lueur:       0 0 20px rgba(212, 168, 75, 0.15);
+  --lueur-titre: 0 0 40px rgba(212, 168, 75, 0.35);
+  --ombre-carte: 0 8px 30px rgba(0, 0, 0, 0.5);
+
+  /* Transitions */
+  --t: 0.2s ease;
+}

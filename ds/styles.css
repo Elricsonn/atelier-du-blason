@@ -1,0 +1,15 @@
+/* ═══════════════════════════════════════════════════════════════
+   CHARTE ÉSOTÉRIQUE — point d'entrée unique
+   Un seul <link> à poser dans le <head> :
+       <link rel="stylesheet" href="ds/styles.css">
+   Le dossier ne commence PAS par un underscore, volontairement :
+   Jekyll ignore les dossiers en _, et six des neuf dépôts publient
+   en mode branche, donc via Jekyll. Ne pas renommer en _ds/.
+   ═══════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
+@import 'jetons.css';
+@import 'base.css';
+@import 'mise-en-page.css';
+@import 'composants.css';

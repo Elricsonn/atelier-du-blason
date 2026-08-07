@@ -1,0 +1,41 @@
+/* ── MISE EN PAGE ───────────────────────────────────────────────
+   Conteneurs, sections, filets.
+   ─────────────────────────────────────────────────────────────── */
+
+.contenu {
+  max-width: var(--largeur-texte);
+  margin-inline: auto;
+  padding-inline: var(--sp-5);
+}
+.contenu-large { max-width: var(--largeur-large); }
+
+.section { padding-block: var(--sp-8); }
+.section-alt { background: rgba(26, 18, 0, 0.4); }
+
+.section-titre {
+  font-family: var(--font-titre);
+  font-weight: 600;
+  font-size: 1.6rem;
+  letter-spacing: 0.25em;
+  text-indent: 0.25em;         /* voir « compensation » dans le README */
+  text-align: center;
+  color: var(--or);
+  margin-bottom: var(--sp-3);
+}
+
+/* Filet dégradé — l'ornement de séparation de la charte. */
+.filet {
+  width: min(200px, 60vw);
+  height: 1px;
+  margin: 0 auto var(--sp-6);
+  background: linear-gradient(to right, transparent, var(--or), transparent);
+}
+.filet-court { width: min(120px, 40vw); }
+
+.grille {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--sp-6);
+}
+
+.pile { display: flex; flex-direction: column; gap: var(--sp-6); }

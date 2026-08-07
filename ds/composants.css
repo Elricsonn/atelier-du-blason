@@ -1,0 +1,275 @@
+/* ── COMPOSANTS ─────────────────────────────────────────────────
+   Inventaire relevé sur les quatre sites : rien de plus.
+   ─────────────────────────────────────────────────────────────── */
+
+/* En-tête collant ------------------------------------------------ */
+.entete {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--fond-voile);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--or-ombre);
+  padding-block: var(--sp-3);
+}
+.entete-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--sp-5);
+  max-width: var(--largeur-large);
+  margin-inline: auto;
+  padding-inline: var(--sp-5);
+}
+.logo {
+  font-family: var(--font-titre);
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.2em;
+  color: var(--or);
+  text-shadow: var(--lueur);
+}
+
+.nav { display: flex; gap: var(--sp-6); align-items: center; flex-wrap: wrap; }
+.nav a {
+  font-family: var(--font-titre);
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--texte-doux);
+  padding-block: var(--sp-2);
+  position: relative;
+}
+.nav a:hover, .nav a[aria-current] { color: var(--or); }
+.nav a[aria-current]::after {
+  content: ''; position: absolute; inset-inline: 0; bottom: 0;
+  height: 1px; background: var(--or);
+}
+
+/* Bandeau d'accueil ---------------------------------------------- */
+.bandeau {
+  position: relative;
+  min-height: 70vh;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center;
+  overflow: hidden;
+}
+.bandeau-fond {
+  position: absolute; inset: 0; z-index: 0;
+  background-size: cover; background-position: center;
+  filter: brightness(0.3) sepia(0.4);
+}
+.bandeau-voile {
+  position: absolute; inset: 0; z-index: 1;
+  background: radial-gradient(ellipse at center, transparent 30%, var(--fond) 100%);
+}
+.bandeau-contenu {
+  position: relative; z-index: 2;
+  padding: var(--sp-8) var(--sp-5);
+  display: flex; flex-direction: column; align-items: center; gap: var(--sp-5);
+}
+.bandeau-titre {
+  font-family: var(--font-titre);
+  font-weight: 700;
+  font-size: clamp(1.8rem, 6vw, 3rem);
+  letter-spacing: 0.2em;
+  margin-inline-end: -0.2em;   /* voir « compensation » dans le README */
+  text-transform: uppercase;
+  color: var(--or);
+  text-shadow: var(--lueur-titre);
+}
+.bandeau-chapo {
+  font-style: italic;
+  font-size: 1.15rem;
+  color: var(--texte-doux);
+  max-width: 50ch;
+}
+
+/* Ornements ------------------------------------------------------ */
+.ornement {
+  color: var(--or);
+  opacity: 0.6;
+  letter-spacing: 0.6em;
+  margin-inline-end: -0.6em;   /* voir « compensation » dans le README */
+  font-size: 1.2rem;
+}
+
+/* Étiquette / méta ----------------------------------------------- */
+.meta {
+  font-family: var(--font-titre);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--texte-meta);
+}
+
+/* Panneau bordé ------------------------------------------------- */
+.panneau {
+  background: rgba(30, 20, 8, 0.85);
+  border: 1px solid var(--or-profond);
+  border-radius: var(--r-lg);
+  padding: var(--sp-6) var(--sp-7);
+  display: flex; flex-direction: column; gap: var(--sp-6);
+}
+
+/* Intertitre flanqué de filets ----------------------------------- */
+.titre-flanque {
+  display: flex; align-items: center; gap: var(--sp-4);
+  font-family: var(--font-titre);
+  font-weight: 400;
+  font-size: 0.72rem;
+  letter-spacing: 0.3em;
+  padding-inline-start: 0.3em;  /* voir « compensation » dans le README */
+  text-transform: uppercase;
+  color: var(--texte-meta);
+  text-align: center;
+}
+.titre-flanque::before,
+.titre-flanque::after {
+  content: ""; flex: 1; height: 1px;
+  background: linear-gradient(to right, transparent, var(--or-profond), transparent);
+}
+
+/* Boutons -------------------------------------------------------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 44px;                 /* cible tactile */
+  padding: var(--sp-3) var(--sp-6);
+  font-family: var(--font-titre);
+  font-size: 0.82rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--or);
+  background: var(--fond-panneau);
+  border: 1px solid var(--or-fonce);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: background var(--t), color var(--t), box-shadow var(--t), border-color var(--t);
+}
+.btn:hover {
+  background: var(--fond-survol);
+  color: var(--or-clair);
+  box-shadow: var(--lueur);
+}
+.btn:active { transform: translateY(1px); }
+.btn[disabled], .btn[aria-disabled="true"] {
+  opacity: 0.35; pointer-events: none;
+}
+
+.btn-fantome { background: transparent; border-color: var(--or-profond); }
+.btn-fantome:hover { background: rgba(212, 168, 75, 0.08); border-color: var(--or); }
+
+/* Cartes --------------------------------------------------------- */
+.carte {
+  background: var(--fond-panneau);
+  border: 1px solid var(--or-ombre);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.carte:hover {
+  border-color: var(--or-fonce);
+  box-shadow: 0 0 30px rgba(212, 168, 75, 0.08);
+}
+.carte-corps { padding: var(--sp-6); display: flex; flex-direction: column; gap: var(--sp-3); }
+.carte-titre {
+  font-family: var(--font-titre);
+  font-weight: 600;
+  font-size: 1.3rem;
+  line-height: 1.3;
+  color: var(--or);
+}
+.carte-titre a { color: inherit; }
+.carte-image { background-size: cover; background-position: center; min-height: 200px; }
+
+/* Variante horizontale : image à gauche, texte à droite. */
+.carte-horizontale { display: flex; gap: var(--sp-6); }
+.carte-horizontale .carte-image { flex: 0 0 280px; }
+.carte-horizontale .carte-corps { flex: 1; }
+
+/* Texte long ----------------------------------------------------- */
+.prose { font-size: 1.05rem; line-height: 1.85; }
+.prose > * + * { margin-top: 1.4em; }
+.prose h2 {
+  font-family: var(--font-titre); font-weight: 600;
+  font-size: 1.4rem; letter-spacing: 0.1em; color: var(--or);
+  margin-top: 2em;
+}
+.prose h3 {
+  font-family: var(--font-titre); font-weight: 600;
+  font-size: 1.1rem; letter-spacing: 0.08em; color: var(--or-moyen);
+  margin-top: 1.6em;
+}
+.prose strong { color: var(--or); font-weight: 600; }
+.prose em { color: var(--texte-doux); }
+.prose blockquote {
+  padding: var(--sp-5) var(--sp-6);
+  border-left: 3px solid var(--or);
+  background: rgba(26, 18, 0, 0.5);
+  border-radius: 0 var(--r-lg) var(--r-lg) 0;
+  font-style: italic;
+  color: var(--texte-doux);
+}
+.prose ul, .prose ol { padding-left: 1.4em; }
+.prose li + li { margin-top: 0.5em; }
+.prose hr {
+  border: 0; height: 1px;
+  background: linear-gradient(to right, transparent, var(--or-ombre), transparent);
+}
+
+/* Écran de porte (loge-rer, atelier-du-blason) -------------------- */
+.porte {
+  position: fixed; inset: 0; z-index: 900;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: var(--sp-5);
+  background: var(--fond);
+  text-align: center;
+  padding: var(--sp-6);
+}
+.porte-titre {
+  font-family: var(--font-orne);
+  font-size: clamp(1.6rem, 7vw, 2rem);
+  letter-spacing: 0.3em;
+  margin-inline-end: -0.3em;   /* voir « compensation » dans le README */
+  text-transform: uppercase;
+  color: var(--or);
+  text-shadow: var(--lueur-titre);
+}
+.champ {
+  width: min(320px, 90vw);
+  min-height: 44px;
+  padding: var(--sp-3) var(--sp-4);
+  font-family: var(--font-titre);
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  color: var(--texte);
+  background: #0f0b00;
+  border: 1px solid var(--or-fonce);
+  border-radius: var(--r-md);
+}
+.champ::placeholder { color: var(--texte-doux); opacity: 0.6; }
+
+/* Pied de page --------------------------------------------------- */
+.pied {
+  border-top: 1px solid var(--or-ombre);
+  padding-block: var(--sp-6);
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: var(--sp-3);
+}
+.pied-texte {
+  font-family: var(--font-titre);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  color: var(--texte-meta);
+}
+
+/* Responsive ----------------------------------------------------- */
+@media (max-width: 768px) {
+  .carte-horizontale { flex-direction: column; }
+  .carte-horizontale .carte-image { flex: none; min-height: 180px; }
+  .nav { gap: var(--sp-4); }
+  .nav a { font-size: 0.7rem; }
+  .section { padding-block: var(--sp-7); }
+}
+
+@media (max-width: 480px) {
+  .entete-inner { flex-direction: column; gap: var(--sp-3); }
+}

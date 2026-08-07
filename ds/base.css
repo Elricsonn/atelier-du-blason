@@ -1,0 +1,48 @@
+/* ── BASE ───────────────────────────────────────────────────────
+   Reset, corps de page, liens, accessibilité.
+   ─────────────────────────────────────────────────────────────── */
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+body {
+  background: var(--fond);
+  color: var(--texte);
+  font-family: var(--font-corps);
+  font-size: var(--corps);
+  line-height: var(--interligne);
+  min-height: 100vh;
+  min-height: 100dvh;
+  text-wrap: pretty;
+  -webkit-font-smoothing: antialiased;
+}
+
+img, svg, video { max-width: 100%; height: auto; display: block; }
+
+a {
+  color: var(--or);
+  text-decoration: none;
+  transition: color var(--t);
+}
+a:hover { color: var(--or-clair); }
+
+/* Focus clavier visible partout — jamais supprimé. */
+:focus-visible {
+  outline: 2px solid var(--or);
+  outline-offset: 3px;
+  border-radius: var(--r-sm);
+}
+
+::selection { background: rgba(212, 168, 75, 0.25); color: var(--texte); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
